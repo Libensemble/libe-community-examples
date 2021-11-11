@@ -1,0 +1,39 @@
+name: test-community-examples
+on:
+    schedule:
+        - cron: '0 14 * * 2'
+jobs:
+    test-community-examples:
+
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+
+        env:
+            TERM: xterm-256color
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        defaults:
+            run:
+                shell: bash -l {0}
+
+        steps:
+        - uses: actions/checkout@v2
+        - name: Setup conda
+          uses: conda-incubator/setup-miniconda@v2
+          with:
+            activate-environment: condaenv
+            miniconda-version: "latest"
+            python-version: 3.8
+            channels: conda-forge
+            channel-priority: flexible
+            auto-update-conda: true
+
+        - name: Force-update certifi, install libEnsemble
+          run: |
+            python --version
+            pip install -I --upgrade certifi
+            pip install libensemble
+
+        - name: Install Ubuntu compilers
+          run: conda install gcc_linux-64

@@ -37,3 +37,7 @@ jobs:
 
         - name: Install Ubuntu compilers
           run: conda install gcc_linux-64
+
+        - name: Run tests
+          run: |
+            cd vtmop; python test_vtmop.py --comms local --nworkers 5

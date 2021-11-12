@@ -18,12 +18,6 @@ and libE.
 The number of concurrent evaluations of the objective function will be 4-1=3.
 """
 
-# Do not change these lines - they are parsed by run-tests.sh
-# TESTSUITE_COMMS: local
-# TESTSUITE_OS_SKIP: OSX
-# TESTSUITE_NPROCS: 5
-# TESTSUITE_EXTRA: true
-
 import numpy as np
 import os
 import time
@@ -34,7 +28,7 @@ from libensemble.libE import libE
 
 # from libensemble.sim_funcs.mop_funcs import convex_mop as func
 from libensemble.sim_funcs.mop_funcs import dtlz2 as func
-from libensemble.gen_funcs.vtmop import vtmop_gen as gen_f
+from vtmop import vtmop_gen as gen_f
 from libensemble.alloc_funcs.only_one_gen_alloc import ensure_one_active_gen as alloc_f
 from libensemble.tools import parse_args, save_libE_output, add_unique_random_streams
 

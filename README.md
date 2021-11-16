@@ -18,3 +18,5 @@ for easier discoverability. See the various READMEs for more information.
     with libEnsemble. In Proc. 2020 Spring Simulation Conference (SpringSim '20),
     Article No. 31, pp. 1–12. DOI: 10.22360/springsim.2020.hpc.001
     ```
+
+    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/main/libensemble/gen_funcs/vtmop_libe).

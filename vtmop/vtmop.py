@@ -5,7 +5,7 @@ optimization problems with arbitrary number of objectives.
 import numpy as np
 import ctypes
 from sys import float_info
-from libensemble.gen_funcs.vtmop_libe import vtmop_libe_mod
+from vtmop_init import vtmop_libe_mod
 
 
 def vtmop_gen(H, persis_info, gen_specs, _):

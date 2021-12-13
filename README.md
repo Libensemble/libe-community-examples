@@ -20,3 +20,20 @@ for easier discoverability. See the various READMEs for more information.
     ```
 
     Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/main/libensemble/gen_funcs/vtmop_libe).
+
+
+2. #### LibE-DDMD
+    *Complete Workflow*
+
+    A complete Molecular-Dynamics / Machine-Learning adaptive
+    simulation loop based on [DeepDriveMD](https://deepdrivemd.github.io/).
+    The simulation function parameterizes and executes molecular-dynamics evaluations
+    from DeepDriveMD, while the persistent generator function runs each of DeepDriveMD's
+    machine-learning training and model selection instances on the output.
+    The generator then selects the most promising output for subsequent MD tasks.
+    See ``ddmd/readme.md`` for more information. Constructed by the libEnsemble team
+    with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).
+
+
+
+    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/main/libensemble/tests/scaling_tests/ddmd).

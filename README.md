@@ -27,10 +27,10 @@ for easier discoverability. See the various READMEs for more information.
 
     A complete Molecular-Dynamics / Machine-Learning adaptive
     simulation loop based on [DeepDriveMD](https://deepdrivemd.github.io/).
-    The simulation function parameterizes and executes molecular-dynamics evaluations
-    from DeepDriveMD, while the persistent generator function runs each of DeepDriveMD's
+    The simulation function runs molecular-dynamics evaluations using DeepDriveMD's
+    ``run_openmm.py``, while the persistent generator function runs the remaining
     machine-learning training and model selection operations on the output.
-    The generator then selects the most promising output for subsequent MD tasks.
+    The generator parameterizes subsequent MD runs by selecting outlier points.
     See ``ddmd/readme.md`` for more information. Constructed by the libEnsemble team
     with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).
 

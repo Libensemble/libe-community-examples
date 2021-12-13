@@ -29,7 +29,7 @@ for easier discoverability. See the various READMEs for more information.
     simulation loop based on [DeepDriveMD](https://deepdrivemd.github.io/).
     The simulation function parameterizes and executes molecular-dynamics evaluations
     from DeepDriveMD, while the persistent generator function runs each of DeepDriveMD's
-    machine-learning training and model selection instances on the output.
+    machine-learning training and model selection operations on the output.
     The generator then selects the most promising output for subsequent MD tasks.
     See ``ddmd/readme.md`` for more information. Constructed by the libEnsemble team
     with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).

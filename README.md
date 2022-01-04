@@ -32,6 +32,6 @@ for easier discoverability. See the various READMEs for more information.
     machine-learning training and model selection operations on the output.
     The generator parameterizes subsequent MD runs by selecting outlier points.
     See ``ddmd/readme.md`` for more information. Constructed by the libEnsemble team
-    with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).
+    as a proof-of-concept with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).
 
     Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/main/libensemble/tests/scaling_tests/ddmd).

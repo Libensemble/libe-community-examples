@@ -17,16 +17,16 @@ _this_directory = os.path.dirname(os.path.abspath(__file__))
 _path_to_lib = os.path.join(_this_directory, _shared_object_name)
 _compile_options = ["-fPIC", "-shared", "-O3", "-std=legacy"]
 _ordered_dependencies = [
-    "blas.f",
-    "shared_modules.f90",
-    "qnstop.f90",
-    "lapack.f",
-    "linear_shepard.f90",
-    "slatec.f",
-    "delsparse.f90",
-    "vtmop.f90",
-    "vtmop_libe.f90",
-    "vtmop_libe_c_wrapper.f90", ]
+    "src/blas.f",
+    "src/shared_modules.f90",
+    "src/qnstop.f90",
+    "src/lapack.f",
+    "src/linear_shepard.f90",
+    "src/slatec.f",
+    "src/delsparse.f90",
+    "src/vtmop.f90",
+    "src/vtmop_libe.f90",
+    "src/vtmop_libe_c_wrapper.f90", ]
 #
 # --------------------------------------------------------------------
 #               AUTO-COMPILING

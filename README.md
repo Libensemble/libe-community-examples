@@ -1,7 +1,7 @@
 # libEnsemble Community Examples
 A selection of libEnsemble functions and complete workflows from the community.
 Many previously built-in libEnsemble examples have been moved here
-for easier discoverability. See the various READMEs for more information.
+for easier discoverability. See the various READMEs and ``test_*.py`` scripts for more information.
 
 1. #### VTMOP
     *Optimization Generator Function*
@@ -19,7 +19,7 @@ for easier discoverability. See the various READMEs for more information.
     Article No. 31, pp. 1–12. DOI: 10.22360/springsim.2020.hpc.001
     ```
 
-    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/main/libensemble/gen_funcs/vtmop_libe).
+    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/gen_funcs/vtmop_libe).
 
 
 2. #### LibE-DDMD
@@ -34,4 +34,16 @@ for easier discoverability. See the various READMEs for more information.
     See ``ddmd/readme.md`` for more information. Constructed by the libEnsemble team
     as a proof-of-concept with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).
 
-    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/main/libensemble/tests/scaling_tests/ddmd).
+    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/tests/scaling_tests/ddmd).
+
+3. #### DEAP-NSGA-II
+   *Optimization Generator Function*
+
+   A persistent generator function that incorporates [DEAP](https://github.com/DEAP/deap),
+   an evolutionary computation framework, and the NSGA-II multi-objective optimization
+   strategy. The generator evaluates the "fitness" of current population members
+   and requests their evaluation with libEnsemble's manager. The manager
+   returns corresponding "fitness values".
+
+   Originally included in libEnsemble v0.7.0. The most recent version was distributed
+   with libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/blob/v0.8.0/libensemble/tests/regression_tests/test_deap_nsga2.py).

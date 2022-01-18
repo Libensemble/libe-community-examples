@@ -1,6 +1,6 @@
 # libEnsemble Community Examples
 A selection of libEnsemble functions and complete workflows from the community.
-Many previously built-in libEnsemble examples have been moved here
+Many previously built-in libEnsemble examples are being moved here
 for easier discoverability. See the various READMEs for more information.
 
 1. #### VTMOP

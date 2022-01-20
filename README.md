@@ -21,7 +21,6 @@ for easier discoverability. See the various READMEs and ``test_*.py`` scripts fo
 
     Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/gen_funcs/vtmop_libe).
 
-
 2. #### LibE-DDMD
     *Complete Workflow*
 

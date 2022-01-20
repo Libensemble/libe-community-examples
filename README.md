@@ -39,11 +39,11 @@ for easier discoverability. See the various READMEs and ``test_*.py`` scripts fo
 3. #### DEAP-NSGA-II
    *Optimization Generator Function*
 
-   A persistent generator function that incorporates [DEAP](https://github.com/DEAP/deap),
-   an evolutionary computation framework, and the NSGA-II multi-objective optimization
+   A persistent generator function that interfaces with the [DEAP](https://github.com/DEAP/deap),
+   evolutionary algorithms as generator functions. This example demonstrates the NSGA-II multi-objective optimization
    strategy. The generator evaluates the "fitness" of current population members
-   and requests their evaluation with libEnsemble's manager. The manager
-   returns corresponding "fitness values".
+   and requests their evaluation from the libEnsemble's manager. The manager
+   returns corresponding "fitness values" for each objective.
 
    Originally included in libEnsemble v0.7.0. The most recent version was distributed
    with libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/blob/v0.8.0/libensemble/tests/regression_tests/test_deap_nsga2.py).

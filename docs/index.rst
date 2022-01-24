@@ -5,6 +5,7 @@ The following is an overview of several examples included in
 libEnsemble's `community repository`_. See the README in that repository for
 more information.
 
+:ref:`Main libEnsemble Documentation<main>`
 
 persistent_deap_nsga2
 ---------------------

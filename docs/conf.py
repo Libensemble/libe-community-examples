@@ -41,6 +41,10 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.imgconverter',
               'sphinx.ext.mathjax']
 
+intersphinx_mapping = {
+    'main': ('https://libensemble.readthedocs.io/en/main/', None)
+}
+
 extlinks = {'duref': ('http://docutils.sourceforge.net/docs/ref/rst/'
                       'restructuredtext.html#%s', ''),
             'durole': ('http://docutils.sourceforge.net/docs/ref/rst/'

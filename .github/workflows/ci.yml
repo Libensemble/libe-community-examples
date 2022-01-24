@@ -29,10 +29,11 @@ jobs:
             channel-priority: flexible
             auto-update-conda: true
 
-        - name: Force-update certifi, install libEnsemble
+        - name: Force-update certifi, dependencies, install libEnsemble
           run: |
             python --version
             pip install -I --upgrade certifi
+            pip install deap
             pip install libensemble
 
         - name: Install Ubuntu compilers
@@ -41,3 +42,4 @@ jobs:
         - name: Run tests
           run: |
             cd vtmop; python test_vtmop.py --comms local --nworkers 5
+            cd ../deap; python test_deap_nsga2.py --comms local --nworkers 4

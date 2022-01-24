@@ -32,23 +32,24 @@ _ordered_dependencies = [
 #               AUTO-COMPILING
 #
 # Try to import the existing object. If that fails, recompile and then try.
-try:
-    clib = ctypes.CDLL(_path_to_lib)
-except Exception:
-    # Remove the shared object if it exists, because it is faulty.
-    if os.path.exists(_shared_object_name):
-        os.remove(_shared_object_name)
-    # Compile a new shared object.
-    _command = " ".join([_fort_compiler] + _compile_options + ["-o", _shared_object_name] + _ordered_dependencies)
-    if _verbose:
-        print("Running system command with arguments")
-        print("  ", _command)
-    # Run the compilation command.
-    import subprocess
+if not os.environ.get('READTHEDOCS'):
+    try:
+        clib = ctypes.CDLL(_path_to_lib)
+    except Exception:
+        # Remove the shared object if it exists, because it is faulty.
+        if os.path.exists(_shared_object_name):
+            os.remove(_shared_object_name)
+        # Compile a new shared object.
+        _command = " ".join([_fort_compiler] + _compile_options + ["-o", _shared_object_name] + _ordered_dependencies)
+        if _verbose:
+            print("Running system command with arguments")
+            print("  ", _command)
+        # Run the compilation command.
+        import subprocess
 
-    subprocess.run(_command, shell=True, cwd=_this_directory)
-    # Import the shared object file as a C library with ctypes.
-    clib = ctypes.CDLL(_path_to_lib)
+        subprocess.run(_command, shell=True, cwd=_this_directory)
+        # Import the shared object file as a C library with ctypes.
+        clib = ctypes.CDLL(_path_to_lib)
 # --------------------------------------------------------------------
 
 
@@ -519,5 +520,5 @@ class vtmop_libe_mod:
         # Return final results, 'INTENT(OUT)' arguments only.
         return lbatch.value, batchx, ierr.value
 
-
-vtmop_libe_mod = vtmop_libe_mod()
+if not os.environ.get('READTHEDOCS'):
+    vtmop_libe_mod = vtmop_libe_mod()

@@ -14,6 +14,8 @@ setup(
     author='libEnsemble developers and users',
     author_email='libensemble@lists.mcs.anl.gov',
 
+    install_requires=['libensemble'],
+
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

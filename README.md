@@ -1,7 +1,15 @@
 # libEnsemble Community Examples
 A selection of libEnsemble functions and complete workflows from the community.
 Many previously built-in libEnsemble examples have been moved here
-for easier discoverability. See the various READMEs and ``test_*.py`` scripts for more information.
+for easier discoverability.
+
+More information about each of these can be found in the various READMEs
+and the ``test_*.py`` Python calling scripts.
+
+Each of the Optimization Generator
+Function examples has API documentation available online:
+
+https://libensemble.readthedocs.io/projects/libe-community-examples/en/latest/
 
 1. #### VTMOP
     *Optimization Generator Function*

@@ -6,10 +6,10 @@ for easier discoverability.
 More information about each of these can be found in the various READMEs
 and the ``test_*.py`` Python calling scripts.
 
-Each of the Optimization Generator
-Function examples has API documentation available online:
+Each of the Optimization Generator Function examples is tested regularly
+on [GitHub Actions](https://github.com/Libensemble/libe-community-examples/actions)
+and has [API documentation available online](https://libensemble.readthedocs.io/projects/libe-community-examples/en/latest/).
 
-https://libensemble.readthedocs.io/projects/libe-community-examples/en/latest/
 
 1. #### VTMOP
     *Optimization Generator Function*

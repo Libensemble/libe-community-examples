@@ -53,3 +53,6 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    returns corresponding "fitness values" for each objective.
 
    Last included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/blob/v0.8.0/libensemble/tests/regression_tests/test_deap_nsga2.py).
+
+4. #### TTE Trajectory Pruning
+   *Complete Workflow*

@@ -8,16 +8,22 @@ from libensemble.tools import parse_args, add_unique_random_streams
 from tte import run_timesteps, evaluate_state
 
 
-def timesteps_simf_wrap(In, persis_info, sim_specs, _):
+def timesteps_simf_wrap(In, persis_info, sim_specs, libE_info):
 
     in_state = In["state"][0]
+    stop_sim = In["stop_sim"][0]
+
+    rng = persis_info["rand_stream"]
+    num_steps = sim_specs["user"]["num_steps"]
+    threshold = sim_specs["user"]["threshold"]
+    timestep_time = sim_specs["user"]["timestep_time"]
 
     out_state, persis_info["rand_stream"] = run_timesteps(
         in_state,
-        persis_info["rand_stream"],
-        sim_specs["user"]["num_steps"],
-        sim_specs["user"]["threshold"],
-        sim_specs["user"]["timestep_time"],
+        rng,
+        num_steps,
+        threshold,
+        timestep_time,
     )
 
     Out = np.zeros(1, dtype=sim_specs["out"])
@@ -27,7 +33,7 @@ def timesteps_simf_wrap(In, persis_info, sim_specs, _):
     return Out, persis_info
 
 
-def evaluate_genf_wrap(In, persis_info, gen_specs, _):
+def evaluate_genf_wrap(In, persis_info, gen_specs, libE_info):
 
     in_state = In["state"]
 
@@ -52,7 +58,7 @@ if __name__ == "__main__":
 
     sim_specs = {
         "sim_f": timesteps_simf_wrap,
-        "in": ["state"],
+        "in": ["state", "stop_sim"],
         "out": [("state", int)],
         "user": {
             "timestep_time": 0.01,
@@ -64,7 +70,7 @@ if __name__ == "__main__":
     gen_specs = {
         "gen_f": evaluate_genf_wrap,
         "in": ["state"],
-        "out": [("stop_sim", bool), ("total", int)],
+        "out": [("stop_sim", bool)],
         "user": {
             "target_count": 8,
             "delay": 0.1,

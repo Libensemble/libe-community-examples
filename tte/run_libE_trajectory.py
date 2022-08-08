@@ -13,7 +13,11 @@ def timesteps_simf_wrap(In, persis_info, sim_specs, libE_info):
     in_state = In["state"][0]
     stop_sim = In["stop_sim"][0]
 
-    rng = persis_info["rand_stream"]
+    if stop_sim:
+        rng = None
+    else:
+        rng = persis_info["rand_stream"]
+
     num_steps = sim_specs["user"]["num_steps"]
     threshold = sim_specs["user"]["threshold"]
     timestep_time = sim_specs["user"]["timestep_time"]
@@ -28,7 +32,6 @@ def timesteps_simf_wrap(In, persis_info, sim_specs, libE_info):
 
     Out = np.zeros(1, dtype=sim_specs["out"])
     Out["state"] = out_state
-    print(out_state)
 
     return Out, persis_info
 
@@ -48,6 +51,7 @@ def evaluate_genf_wrap(In, persis_info, gen_specs, libE_info):
 
     Out = np.zeros(1, dtype=gen_specs["out"])
     Out["stop_sim"] = stop_sim
+    Out["state"] = in_state
 
     return Out, persis_info
 
@@ -63,21 +67,21 @@ if __name__ == "__main__":
         "user": {
             "timestep_time": 0.01,
             "num_steps": 10,
-            "threshold": 0.01,
+            "threshold": 0.5,
         },
     }
 
     gen_specs = {
         "gen_f": evaluate_genf_wrap,
         "in": ["state"],
-        "out": [("stop_sim", bool)],
+        "out": [("stop_sim", bool), ("state", int)],
         "user": {
             "target_count": 8,
-            "delay": 0.1,
+            "delay": 0.05,
         },
     }
 
-    exit_criteria = {"sim_max": 100}
+    exit_criteria = {"sim_max": 1000}
     persis_info = add_unique_random_streams({}, nworkers + 1)
 
     H, persis_info, flag = libE(

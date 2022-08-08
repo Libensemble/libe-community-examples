@@ -14,7 +14,11 @@ def timesteps_simf_wrap(In, persis_info, sim_specs, libE_info):
     stop_sim = In["stop_sim"][0]
 
     if stop_sim:
+        print(
+            f'cancelling {persis_info["rand_stream"]} at {hex(id(persis_info["rand_stream"]))} with state {persis_info["rand_stream"].__getstate__()["state"]["state"]}'
+        )
         rng = None
+        in_state = 0
     else:
         rng = persis_info["rand_stream"]
 
@@ -33,25 +37,27 @@ def timesteps_simf_wrap(In, persis_info, sim_specs, libE_info):
     Out = np.zeros(1, dtype=sim_specs["out"])
     Out["state"] = out_state
 
+    print(out_state)
+
     return Out, persis_info
 
 
 def evaluate_genf_wrap(In, persis_info, gen_specs, libE_info):
 
-    in_state = In["state"]
+    batch_size = gen_specs["user"]["batch_size"]
 
-    if len(in_state):
-        in_state = In["state"][0]
-    else:
-        in_state = 0
+    Out = np.zeros(batch_size, dtype=gen_specs["out"])
 
-    stop_sim = evaluate_state(
-        in_state, gen_specs["user"]["target_count"], gen_specs["user"]["delay"]
-    )
+    if len(In["state"]):
+        in_state = In["state"][-batch_size:]  # last eval'd states
+    else:  # first gen call. initialize
+        in_state = [0] * batch_size
 
-    Out = np.zeros(1, dtype=gen_specs["out"])
-    Out["stop_sim"] = stop_sim
-    Out["state"] = in_state
+    for i, x in enumerate(in_state):
+        Out["stop_sim"][i] = evaluate_state(
+            x, gen_specs["user"]["target_count"], gen_specs["user"]["delay"]
+        )
+        Out["state"][i] = x  # pass through
 
     return Out, persis_info
 
@@ -67,7 +73,7 @@ if __name__ == "__main__":
         "user": {
             "timestep_time": 0.01,
             "num_steps": 10,
-            "threshold": 0.5,
+            "threshold": 0.1,
         },
     }
 
@@ -77,7 +83,8 @@ if __name__ == "__main__":
         "out": [("stop_sim", bool), ("state", int)],
         "user": {
             "target_count": 8,
-            "delay": 0.05,
+            "delay": None,  # 0.1
+            "batch_size": nworkers,
         },
     }
 

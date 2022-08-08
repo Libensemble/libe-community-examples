@@ -25,7 +25,7 @@ def run_timesteps(state: int, rng: Optional[random.RandomState], num_steps: int,
 
     # Make a new rng if none provided
     if not rng:
-        rng = random.RandomState()
+        rng = random.default_rng()
 
     # Determine how many times the event happens
     state += rng.binomial(num_steps, p=threshold)

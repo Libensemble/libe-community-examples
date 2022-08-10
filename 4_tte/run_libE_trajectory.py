@@ -15,12 +15,13 @@ def timesteps_simf_wrap(In, persis_info, sim_specs, libE_info):
 
     if stop_sim:
         print(
-            f'cancelling {persis_info["rand_stream"]} at {hex(id(persis_info["rand_stream"]))} with state {persis_info["rand_stream"].__getstate__()["state"]["state"]}'
+            f'CANCELLING {persis_info["rand_stream"]} at {hex(id(persis_info["rand_stream"]))} with state {persis_info["rand_stream"].__getstate__()["state"]["state"]}'
         )
         rng = None
         in_state = 0
     else:
         rng = persis_info["rand_stream"]
+        print(f'REUSING {persis_info["rand_stream"]} at {hex(id(persis_info["rand_stream"]))}')
 
     num_steps = sim_specs["user"]["num_steps"]
     threshold = sim_specs["user"]["threshold"]
@@ -36,8 +37,6 @@ def timesteps_simf_wrap(In, persis_info, sim_specs, libE_info):
 
     Out = np.zeros(1, dtype=sim_specs["out"])
     Out["state"] = out_state
-
-    print(out_state)
 
     return Out, persis_info
 
@@ -88,7 +87,7 @@ if __name__ == "__main__":
         },
     }
 
-    exit_criteria = {"sim_max": 1000}
+    exit_criteria = {"sim_max": 500}
     persis_info = add_unique_random_streams({}, nworkers + 1)
 
     H, persis_info, flag = libE(

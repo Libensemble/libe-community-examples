@@ -56,3 +56,7 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 
 4. #### TTE Trajectory Pruning
    *Complete Workflow*
+
+   A simplified, example workflow developed in cooperation with Argonne's ensemble-steering group. Demonstrates the capability
+   to evaluate "states" of parallel stochastic function instances, and cancel those instances that have reached some 
+   intermediate event threshold.

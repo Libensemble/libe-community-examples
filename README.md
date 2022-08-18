@@ -53,3 +53,10 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    returns corresponding "fitness values" for each objective.
 
    Last included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/blob/v0.8.0/libensemble/tests/regression_tests/test_deap_nsga2.py).
+
+4. #### RNN-Robustness
+   *Complete Workflow*
+
+   A generator-less workflow used to train a selection of neural network architectures on ALCF's Theta. An initial History array of hyperparameters
+   are read from ``test_training_args.npz`` and provided to libEnsemble for distribution and evaluation by worker processes. See ``rnn/description.pdf``
+   for more information about the included files.

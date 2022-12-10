@@ -20,11 +20,12 @@ import numpy as np
 import csv
 import sys
 from time import time_ns
-from parmoo.extras.libe import libE_MOOP
+from parmoo import MOOP
 from parmoo.optimizers import TR_LBFGSB
 from parmoo.surrogates import LocalGaussRBF
 from parmoo.searches import LatinHypercube
 from parmoo.acquisitions import RandomConstraint, FixedWeights
+from parmoo.extras.libe import parmoo_persis_gen
 import accelerator_model
 
 # Set the problem dimensions
@@ -91,138 +92,6 @@ if __name__ == "__main__":
         # Add each data point as another row
         for xs in full_data:
             csv_writer.writerow([xs[name] for name in header])
-
-
-def parmoo_persis_gen(H, persis_info, gen_specs, libE_info):
-    """ A persistent ParMOO generator function for libEnsemble.
-
-    This generator function is meant to be called from within libEnsemble.
-
-    Args:
-        H (numpy structured array): The current libE history array.
-
-        persis_info (dict): Any information that should persist after this
-            generator has exited. Must contain the following field:
-             * 'moop' (parmoo.MOOP)
-
-        gen_specs (dict): A list of specifications for the generator function.
-
-        libE_info (dict): Other information that will be used by libEnsemble.
-
-    Returns:
-        dict: The final simulation history.
-
-        dict: The persistent information after completion of the generator.
-
-        int: The stop tag.
-
-    """
-
-    from libensemble.message_numbers import STOP_TAG, PERSIS_STOP, EVAL_GEN_TAG
-    from libensemble.message_numbers import FINISHED_PERSISTENT_GEN_TAG
-    from libensemble.tools.persistent_support import PersistentSupport
-
-    # Get moop from pers_info
-    if 'moop' in persis_info:
-        moop = persis_info['moop']
-        if not isinstance(moop, MOOP):
-            raise TypeError("persis_info['moop'] must be an instance of " +
-                            "parmoo.MOOP class")
-    else:
-        raise KeyError("'moop' key is required in persis_info dict")
-    # Setup persistent support
-    ps = PersistentSupport(libE_info, EVAL_GEN_TAG)
-    # Send batches until manager sends stop tag
-    tag = None
-    k = 0
-    sim_count = 0
-    # Iterate until the termination condition is reached
-    while tag not in [STOP_TAG, PERSIS_STOP]:
-        # Generate a batch by running one iteration
-        x_out = moop.iterate(k)
-        # Check for duplicates in simulation databases
-        xbatch = []
-        ibatch = []
-        for (xi, i) in x_out:
-            if moop.check_sim_db(xi, i) is None:
-                xbatch.append(xi)
-                ibatch.append(i)
-        # Get the batch size and allocate the H_o structured array
-        b = len(xbatch)
-        H_o = np.zeros(b, dtype=gen_specs['out'])
-        # Populate the H_o structured array 'x' values as appropriate
-        if moop.use_names:
-            for name in moop.des_names:
-                for i in range(b):
-                    H_o[name[0]][i] = xbatch[i][name[0]]
-        else:
-            H_o['x'] = np.asarray(xbatch)
-        for i, namei in enumerate(ibatch):
-            H_o['sim_name'][i] = namei
-        # Evaluate H_o and add to the simulation database
-        batch = []
-        if isinstance(x_out[0][-1], str) or x_out[0][-1] >= 0:
-            tag, Work, calc_in = ps.send_recv(H_o)
-            if calc_in is not None:
-                for s_out in calc_in:
-                    sim_name = s_out['sim_name']
-                    # Check whether design variables are all named
-                    if moop.use_names:
-                        xx = np.zeros(1, dtype=moop.des_names)[0]
-                        for name in moop.des_names:
-                            xx[name[0]] = s_out[name[0]]
-                        sim_num = -1
-                        for j, sj in enumerate(moop.sim_names):
-                            if sj[0] == sim_name:
-                                sim_num = j
-                                break
-                        sx = np.zeros(moop.m[sim_num])
-                        sx[:] = s_out[moop.sim_names[sim_num][0]]
-                        sname = sim_name.decode('utf-8')
-                    else:
-                        xx = np.zeros(moop.n)
-                        xx[:] = s_out['x'][:]
-                        sx = np.zeros(moop.m[sim_name])
-                        sx[:] = s_out['f'][:]
-                        sname = int(sim_name)
-                    # Copy sim results into ParMOO databases
-                    moop.update_sim_db(xx, sx, sname)
-                    batch.append((xx, sname))
-                    sim_count += 1
-            else:
-                new_count = 0
-                for s_out in Work[sim_count:]:
-                    sim_name = s_out['sim_name']
-                    # Check whether design variables are all named
-                    if moop.use_names:
-                        xx = np.zeros(1, dtype=moop.des_names)[0]
-                        for name in moop.des_names:
-                            xx[name[0]] = s_out[name[0]]
-                        sim_num = -1
-                        for j, sj in enumerate(moop.sim_names):
-                            if sj[0] == sim_name:
-                                sim_num = j
-                                break
-                        sx = np.zeros(moop.m[sim_num])
-                        sx[:] = s_out[moop.sim_names[sim_num][0]]
-                        sname = sim_name.decode('utf-8')
-                    else:
-                        xx = np.zeros(moop.n)
-                        xx[:] = s_out['x'][:]
-                        sx = np.zeros(moop.m[sim_name])
-                        sx[:] = s_out['f'][:]
-                        sname = int(sim_name)
-                    # Copy sim results into ParMOO databases
-                    moop.update_sim_db(xx, sx, sname)
-                    batch.append((xx, sname))
-                    new_count += 1
-                sim_count += new_count
-        # Update the ParMOO databases
-        moop.updateAll(k, batch)
-        k += 1
-    # Return the results
-    persis_info['moop'] = moop
-    return H_o, persis_info, FINISHED_PERSISTENT_GEN_TAG
 
         from libensemble.libE import libE
         from libensemble.alloc_funcs.start_only_persistent \

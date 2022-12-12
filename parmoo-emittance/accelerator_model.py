@@ -21,8 +21,8 @@ __shifts__ = lb.copy()
 __scales__ = np.zeros(2)
 __scales__ = ub - lb
 
-def accelerator_sim_model(H, persis_info, sim_specs, _):
-    " libE compatible stand-in function for the real accelerator simulation. "
+def accelerator_sim_model_libe(H, persis_info, sim_specs, _):
+    " libE compatible stand-in function for the real accelerator simulation "
 
     # Get size of libE batch and initialize an output struct
     batch = len(H)
@@ -35,11 +35,30 @@ def accelerator_sim_model(H, persis_info, sim_specs, _):
         # Initialize empty outputs
         H_o['sim out'][i] = np.zeros(4)
         # Assign made-up outputs
-        H_o['sim out'][i] = np.linalg.norm(xx - np.array([0.2, 0.2])) ** 2 + 1
-        H_o['sim out'][i] = np.linalg.norm(xx - np.array([0.2, 0.8])) ** 2 + 1
-        H_o['sim out'][i] = xx[0] * xx[1]
-        H_o['sim out'][i] = np.linalg.norm(xx - np.array([0.8, 0.7])) ** 2 + 1
+        H_o['sim out'][i, 0] = (np.linalg.norm(xx - np.array([0.2, 0.2])) ** 2
+                                + 1.0)
+        H_o['sim out'][i, 1] = (np.linalg.norm(xx - np.array([0.2, 0.8])) ** 2
+                                + 1.0)
+        H_o['sim out'][i, 2] = xx[0] * xx[1]
+        H_o['sim out'][i, 3] = (np.linalg.norm(xx - np.array([0.8, 0.7])) ** 2
+                                + 1.0)
     return H_o, persis_info
+
+def accelerator_sim_model_parmoo(x):
+    " parmoo compatible stand-in function for the real accelerator simulation "
+
+    # Extract the parmoo named-inputs into a numpy ndarray in [0,1]
+    xx = np.zeros(len(DES_NAMES))
+    for i, name in enumerate(DES_NAMES):
+        xx[i] = (x[name] - __shifts__[i]) / __scales__[i]
+    # Initialize empty outputs
+    sx = np.zeros(4)
+    # Assign made-up outputs
+    sx[0] = np.linalg.norm(xx - np.array([0.2, 0.2])) ** 2 + 1
+    sx[1] = np.linalg.norm(xx - np.array([0.2, 0.8])) ** 2 + 1
+    sx[2] = xx[0] * xx[1]
+    sx[3] = np.linalg.norm(xx - np.array([0.8, 0.7])) ** 2 + 1
+    return sx
 
 def emittance(x, s, der=0):
     """ A ParMOO objective that calculates the emittance of the

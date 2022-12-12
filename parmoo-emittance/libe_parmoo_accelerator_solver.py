@@ -1,13 +1,13 @@
-""" Create a ParMOO generator inside of libE to solve the accelerator
+""" Add a ParMOO gen_func inside of libE to solve the accelerator
 optimization MOOP.
 
 Execute via one of the following commands (where N is the number of threads,
 and the optional int M in [0, 2^32-1] is a random seed):
 
 ```
-mpiexec -np N python3 parmoo_accelerator_structured_solver.py [--iseed M]
-python3 parmoo_accelerator_structured_solver.py --nworkers N --comms local [--iseed M]
-python3 parmoo_accelerator_structured_solver.py --nworkers N --comms tcp [--iseed M]
+mpiexec -np N python3 libe_parmoo_accelerator_solver.py [--iseed M]
+python3 libe_parmoo_accelerator_solver.py --nworkers N --comms local [--iseed M]
+python3 libe_parmoo_accelerator_solver.py --nworkers N --comms tcp [--iseed M]
 ```
 
 
@@ -62,8 +62,9 @@ np.random.seed(iseed)
 # Create a dummy sim func to give parmoo - libE gets the real sim func
 def dummy_sim(x): return np.zeros(m)
 
+
 if __name__ == "__main__":
-    """ For a libE_MOOP to be run on certain OS (such as MacOS) it must be
+    """ For libE to run on certain OS (such as MacOS) it must be
     enclosed within an ``if __name__ == '__main__'`` clause. """
 
     # Create a parmoo.MOOP object, which we will pass as the libE gen_func
@@ -107,7 +108,7 @@ if __name__ == "__main__":
         all_types.append(ft)
 
     # Set the input dictionaries
-    sim_specs = {'sim_f': accelerator_model.accelerator_sim_model,
+    sim_specs = {'sim_f': accelerator_model.accelerator_sim_model_libe,
                  'in': [name[0] for name in x_type],
                  'out': f_type}
     gen_specs = {'gen_f': parmoo_persis_gen,
@@ -132,7 +133,7 @@ if __name__ == "__main__":
     full_data = persis_info[1]['moop'].getObjectiveData()
 
     # Dump full data set to a CSV file
-    with open(f"accelerator_libe_parmoo_results_seed_{iseed}.csv", "w") as fp:
+    with open(f"libe_parmoo_acc_results_seed_{iseed}.csv", "w") as fp:
         csv_writer = csv.writer(fp, delimiter=",")
         # Define the header
         header = accelerator_model.DES_NAMES.copy()

@@ -21,30 +21,25 @@ __shifts__ = lb.copy()
 __scales__ = np.zeros(2)
 __scales__ = ub - lb
 
-def accelerator_sim_model(x):
-    """ Stand-in function for the real accelerator simulation.
+def accelerator_sim_model(H, persis_info, sim_specs, _):
+    " libE compatible stand-in function for the real accelerator simulation. "
 
-    Args:
-        x (numpy structured array): contains 2 float-valued fields,
-            defined in DES_NAMES
-
-    Returns:
-        numpy ndarray: contains 4 float-valued outputs, used to compute
-        the 2 objectives
-
-    """
-
-    # Extract the parmoo named-inputs into a numpy ndarray in range [0, 1]
-    xx = np.zeros(2)
-    for i, namei in enumerate(DES_NAMES):
-        xx[i] = (x[namei] - __shifts__[i]) / __scales__[i]
-    # Initialize empty outputs
-    ss = np.zeros(4)
-    ss[0] = np.linalg.norm(xx - np.array([0.2, 0.2])) ** 2 + 1.0
-    ss[1] = np.linalg.norm(xx - np.array([0.2, 0.8])) ** 2 + 1.0
-    ss[2] = xx[0] * xx[1]
-    ss[3] = np.linalg.norm(xx - np.array([0.8, 0.7])) ** 2 + 1.0
-    return ss
+    # Get size of libE batch and initialize an output struct
+    batch = len(H)
+    H_o = np.zeros(batch, dtype=sim_specs['out'])
+    for i in range(batch):
+        # Extract the parmoo named-inputs into a numpy ndarray in [0,1]
+        xx = np.zeros(len(DES_NAMES))
+        for j, name in enumerate(DES_NAMES):
+            xx[j] = (H[name][i] - __shifts__[j]) / __scales__[j]
+        # Initialize empty outputs
+        H_o['sim out'][i] = np.zeros(4)
+        # Assign made-up outputs
+        H_o['sim out'][i] = np.linalg.norm(xx - np.array([0.2, 0.2])) ** 2 + 1
+        H_o['sim out'][i] = np.linalg.norm(xx - np.array([0.2, 0.8])) ** 2 + 1
+        H_o['sim out'][i] = xx[0] * xx[1]
+        H_o['sim out'][i] = np.linalg.norm(xx - np.array([0.8, 0.7])) ** 2 + 1
+    return H_o, persis_info
 
 def emittance(x, s, der=0):
     """ A ParMOO objective that calculates the emittance of the
@@ -121,8 +116,8 @@ if __name__ == "__main__":
         # Define as parmoo expects
         des_type = [(f"{name}", float) for name in DES_NAMES]
         xx = np.zeros(1, dtype=des_type)[0]
-        sx = np.zeros(1, dtype=[("sim out", float, 4)])[0]
+        Ho, persis_info = np.zeros(1, dtype=[("sim out", float, 4)])[0]
         for j in range(len(DES_NAMES)):
             xx[DES_NAMES[j]] = x[j]
-        sx["sim out"][:] = accelerator_sim_model(xx)
-        assert(emittance(xx, sx) >= 0)
+        Ho["sim out"][:] = accelerator_sim_model(xx)
+        assert(emittance(xx, Ho) >= 0)

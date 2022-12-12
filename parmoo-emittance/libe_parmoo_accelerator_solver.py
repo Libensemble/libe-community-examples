@@ -91,14 +91,6 @@ if __name__ == "__main__":
         moop.addAcquisition({'acquisition': RandomConstraint,
                              'hyperparams': {}})
 
-    # Create libEnsemble dictionaries
-    libE_specs['final_fields'] = []
-    for name in moop.des_names:
-        libE_specs['final_fields'].append(name[0])
-    for name in moop.sim_names:
-        libE_specs['final_fields'].append(name[0])
-    libE_specs['final_fields'].append('sim_name')
-
     # Define input/output dtypes
     x_type = [(f'{name}', 'f8') for name in accelerator_model.DES_NAMES]
     x_type.append(('sim_name', 'a10'))
@@ -116,8 +108,9 @@ if __name__ == "__main__":
                  'out': x_type,
                  'user': {}}
     alloc_specs = {'alloc_f': alloc_f, 'out': [('gen_informed', bool)]}
+    libE_specs['final_fields'] = [name[0] for name in all_types]
 
-    # Initialize persistent info dictionaries
+    # Add moop object to the persistent info dictionaries
     persis_info = {}
     for i in range(nworkers + 1):
         persis_info[i] = {}

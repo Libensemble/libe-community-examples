@@ -11,6 +11,7 @@ Setup and Installation
 ----------------------
 
 The requirements for this directory are:
+
  - libensemble_ and
  - parmoo_
 
@@ -26,6 +27,7 @@ Instructions and Structure
 --------------------------
 
 This particular directory contains three Python files.
+
  - ``accelerator_model.py`` defines a made-up simulation function that
    mimics the inputs, outputs, and general structure of a multiobjective
    emittance minimization problem;

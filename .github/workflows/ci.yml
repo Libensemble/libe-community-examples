@@ -41,5 +41,5 @@ jobs:
 
         - name: Run tests
           run: |
-            cd 1_vtmop; python test_vtmop.py --comms local --nworkers 5
-            cd ../3_deap; python test_deap_nsga2.py --comms local --nworkers 4
+            cd vtmop; python test_vtmop.py --comms local --nworkers 5
+            cd ../deap; python test_deap_nsga2.py --comms local --nworkers 4

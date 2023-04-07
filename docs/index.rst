@@ -22,5 +22,10 @@ vtmop
 .. automodule:: vtmop
   :members:
 
+Consensus Subroutines
+---------------------
+
+.. automodule:: consensus_subroutines
+
 .. _DEAP: https://deap.readthedocs.io/en/master/overview.html
 .. _`community repository`: https://github.com/Libensemble/libe-community-examples

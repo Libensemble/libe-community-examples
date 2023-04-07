@@ -6,10 +6,7 @@ import os
 import sys
 from datetime import datetime
 
-if sys.version_info >= (3, 3):
-    from unittest.mock import MagicMock
-else:
-    from mock import MagicMock
+from unittest.mock import MagicMock
 
 class Mock(MagicMock):
     @classmethod
@@ -19,12 +16,14 @@ class Mock(MagicMock):
 MOCK_MODULES = [
         'deap',
         'vtmop.vtmop'
+        'consensus'
         ]
 
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 sys.path.append(os.path.abspath('../deap'))
 sys.path.append(os.path.abspath('../vtmop'))
+sys.path.append(os.path.abspath('../consensus'))
 
 # -- General configuration ------------------------------------------------
 

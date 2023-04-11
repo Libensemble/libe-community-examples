@@ -72,7 +72,7 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 6. #### Distributed Consensus-based Optimization Methods
    *Generator and Allocator Functions*
 
-   Four generator functions, a matching allocator function, a consensus-subroutines module, and tests for each. 
+   Four generator functions, a matching allocator function, a consensus-subroutines module, a handful of test simulation functions, and tests for each. 
    All created by Caleb Ju at ANL as Given's associate Summer 2021. See the docstrings in each of the modules for more information.
 
    Last included in libEnsemble v0.9.3. See [here](https://github.com/Libensemble/libensemble/tree/v0.9.3/libensemble/gen_funcs).

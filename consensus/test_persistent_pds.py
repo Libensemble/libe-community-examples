@@ -36,13 +36,13 @@ import numpy.linalg as la
 import scipy.sparse as spp
 
 from libensemble.alloc_funcs.start_persistent_consensus import start_consensus_persistent_gens as alloc_f
-from libensemble.gen_funcs.persistent_pds import opt_slide as gen_f
+from gens.persistent_pds import opt_slide as gen_f
 from libensemble.libE import libE
-from libensemble.sim_funcs.alt_rosenbrock import alt_rosenbrock_eval
-from libensemble.sim_funcs.linear_regression import linear_regression_eval
-from libensemble.sim_funcs.logistic_regression import logistic_regression_eval
-from libensemble.sim_funcs.nesterov_quadratic import nesterov_quadratic_eval
-from libensemble.sim_funcs.rosenbrock import rosenbrock_eval
+from sims.alt_rosenbrock import alt_rosenbrock_eval
+from sims.linear_regression import linear_regression_eval
+from sims.logistic_regression import logistic_regression_eval
+from sims.nesterov_quadratic import nesterov_quadratic_eval
+from sims.rosenbrock import rosenbrock_eval
 from libensemble.tools import add_unique_random_streams, parse_args
 from consensus_subroutines import get_k_reach_chain_matrix, log_opt, regls_opt
 

@@ -23,9 +23,9 @@ import numpy as np
 import scipy.sparse as spp
 
 from libensemble.alloc_funcs.start_persistent_consensus import start_consensus_persistent_gens as alloc_f
-from libensemble.gen_funcs.persistent_independent_optimize import independent_optimize as gen_f
+from gens.persistent_independent_optimize import independent_optimize as gen_f
 from libensemble.libE import libE
-from libensemble.sim_funcs.rosenbrock import rosenbrock_eval as sim_f
+from sims.rosenbrock import rosenbrock_eval as sim_f
 from libensemble.tools import add_unique_random_streams, parse_args
 from consensus_subroutines import get_k_reach_chain_matrix
 

@@ -159,7 +159,7 @@ def vtmop_gen(H, persis_info, gen_specs, _):
 
          H0['sim_id'] (np.ndarray): Set H0['sim_id'] = range(n).
 
-         H0[['given', 'returned']] = True
+         H0[['sim_started', 'sim_ended']] = True
 
      A checkpoint file (``vtmop.chkpt``) will be generated in the calling
      directory to save the status of VTMOP, and can be used to recover in

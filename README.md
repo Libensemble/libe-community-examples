@@ -76,3 +76,10 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    All created by Caleb Ju at ANL as Given's associate Summer 2021. See the docstrings in each of the modules for more information.
 
    Last included in libEnsemble v0.9.3. See [here](https://github.com/Libensemble/libensemble/tree/v0.9.3/libensemble/gen_funcs).
+
+7 ##### Icesheet Modelling
+  *Scripts for workflow - requires external data files*
+
+  Ensembles of ice-flow simulations using GPUs.
+  James Chegwidden, and Kuang Hsu Wang (ANL/UND in Summer 2022).
+  External Supervisor: Prof. Anjali Sandip (UND).

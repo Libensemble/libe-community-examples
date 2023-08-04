@@ -81,5 +81,6 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    *Scripts for workflow - requires external data files*
 
    Ensembles of ice-flow simulations using GPUs.
+
    James Chegwidden, and Kuang Hsu Wang (ANL/UND in Summer 2022).
    External Supervisor: Prof. Anjali Sandip (UND).

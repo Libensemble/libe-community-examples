@@ -63,13 +63,30 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    for more information about the included files.
 
 5. #### ParMOO-Emittance
+   *Complete Workflow*
 
-   A ParMOO persistent generator function is used to solve a biobjective accelerator emittance minimization problem, 
-   while exploiting problem structure. This directory contains sample-solvers for multiobjective optimization of particle 
-   accelerator setup by using either ParMOO inside libE or libE inside of ParMOO. Note that both methods produce equivalent 
-   results. See the ``parmoo-emittance/README.rst`` for more details, as well as detailed usage instructions and references.
+   A ParMOO persistent generator function is used to solve a biobjective accelerator emittance minimization problem, while exploiting problem structure.
+   This directory contains sample-solvers for multiobjective optimization of particle accelerator setup by using either ParMOO inside libE or libE inside
+   of ParMOO. Note that both methods produce equivalent results. See the ``parmoo-emittance/README.rst`` for more details, as well as detailed usage 
+   instructions and references.
 
-6. #### TTE Trajectory Pruning
+6. #### Distributed Consensus-based Optimization Methods
+   *Generator and Allocator Functions*
+
+   Four generator functions, a matching allocator function, a consensus-subroutines module, a handful of test simulation functions, and tests for each. 
+   All created by Caleb Ju at ANL as Given's associate Summer 2021. See the docstrings in each of the modules for more information.
+
+   Last included in libEnsemble v0.9.3. See [here](https://github.com/Libensemble/libensemble/tree/v0.9.3/libensemble/gen_funcs).
+
+7. #### Icesheet Modelling
+   *Scripts for workflow - requires external data files*
+
+   Ensembles of ice-flow simulations using GPUs.
+
+   James Chegwidden, and Kuang Hsu Wang (ANL/UND in Summer 2022).
+   External Supervisor: Prof. Anjali Sandip (UND).
+
+8. #### TTE Trajectory Pruning
    *Complete Workflow*
 
    A simplified, example workflow developed in cooperation with Argonne's ensemble-steering group. Demonstrates the capability

@@ -57,8 +57,9 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 4. #### RNN-Robustness
    *Complete Workflow*
 
-   A generator-less workflow used to train a selection of neural network architectures on ALCF's Theta. An initial History array of hyperparameters
-   are read from ``test_training_args.npz`` and provided to libEnsemble for distribution and evaluation by worker processes. See ``rnn/description.pdf``
+   A generator-less workflow used to train a selection of neural network architectures on ALCF's Theta. 
+   An initial History array of hyperparametersare read from ``test_training_args.npz`` and provided to 
+   libEnsemble for distribution and evaluation by worker processes. See ``rnn/description.pdf``
    for more information about the included files.
 
 5. #### ParMOO-Emittance
@@ -84,3 +85,10 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 
    James Chegwidden, and Kuang Hsu Wang (ANL/UND in Summer 2022).
    External Supervisor: Prof. Anjali Sandip (UND).
+
+8. #### TTE Trajectory Pruning
+   *Complete Workflow*
+
+   A simplified, example workflow developed in cooperation with Argonne's ensemble-steering group. Demonstrates the capability
+   to evaluate "states" of parallel stochastic function instances, and cancel those instances that have reached some 
+   intermediate event threshold.

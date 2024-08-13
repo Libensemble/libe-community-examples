@@ -49,7 +49,7 @@ where ``C`` is the communication protocol (``local`` or ``tcp``);
 ``N`` is the number of libE workers (i.e., number of concurrent simulation
 evaluations); and
 ``I`` is the random seed, which can be fixed to any integer for
-reproducability (when omitted, it is assigned by the system clock).
+reproducibility (when omitted, it is assigned by the system clock).
 
 After running, the complete function-value database is saved to a file
 ``parmoo_libe_acc_results_seed_I.csv`` or

@@ -790,7 +790,7 @@ class CoadjointModel(tf.keras.Model):
 
         del t1
 
-        # for embedding layer compatabiity
+        # for embedding layer compatibility
         if self.embed:
             dL_dW[0] = tf.convert_to_tensor(dL_dW[0])
             dG_dW[0] = tf.convert_to_tensor(dG_dW[0])

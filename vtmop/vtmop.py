@@ -87,7 +87,7 @@ def vtmop_gen(H, persis_info, gen_specs, _):
              space. A design point that is within DES_TOL of another evaluated
              design point will not be reevaluated. The default value for
              DES_TOL is the square-root of the working precision EPS (below).
-             Note that any value that is smaller than the working precsion EPS
+             Note that any value that is smaller than the working precision EPS
              will be ignored and EPS will be used.
 
          gen_specs['user']['eps'] (float): specifies the working precision of the
@@ -108,7 +108,7 @@ def vtmop_gen(H, persis_info, gen_specs, _):
              being dominated by another objective point will be treated as such.
              The default value of OBJ_TOL is the square-root of EPS. This
              value should be strictly greater than the value of EPS. Note that
-             any value that is smaller than the working precsion EPS will be
+             any value that is smaller than the working precision EPS will be
              ignored and EPS will be used.
 
          gen_specs['user']['obj_bounds'] (np.ndarray) is an optional 2d array

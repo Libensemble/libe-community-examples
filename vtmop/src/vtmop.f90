@@ -278,7 +278,7 @@ SUBROUTINE VTMOP_INIT( VTMOP, D, P, LB, UB, IERR, LOPT_BUDGET, DECAY,     &
 ! DES_TOL is the tolerance for the design space. A design point that
 !    is within DES_TOL of an evaluated design point will not be reevaluated.
 !    The default value for DES_TOL is the square-root of the working precision
-!    EPS. Note that any value that is smaller than the working precsion EPS
+!    EPS. Note that any value that is smaller than the working precision EPS
 !    will be ignored and EPS will be used.
 !
 ! EPS is a real input, which specifies the working precision of the
@@ -298,7 +298,7 @@ SUBROUTINE VTMOP_INIT( VTMOP, D, P, LB, UB, IERR, LOPT_BUDGET, DECAY,     &
 !    will be treated as such. The default value of OBJ_TOL is the
 !    square-root of EPS. This value should be strictly greater than the
 !    value of EPS. Note that any value that is smaller than the
-!    working precsion EPS will be ignored and EPS will be used.
+!    working precision EPS will be ignored and EPS will be used.
 !
 ! OBJ_BOUNDS(1:P,1:2) is an optional real P by 2 array, whose first column
 !    is a list of lower bounds and whose second column is a list of upper
@@ -2844,7 +2844,7 @@ SUBROUTINE QSORTC_DVEC(A, IDX)
 ! A(:,:) is sorted by column sum.
 !
 ! IDX(1:SIZEOF(A,2)) contains the original positions of the sorted values.
-!    I.e., sorted(i) = orginal_unsorted(IDX(i)).
+!    I.e., sorted(i) = original_unsorted(IDX(i)).
 !
 USE REAL_PRECISION, ONLY : R8
 IMPLICIT NONE

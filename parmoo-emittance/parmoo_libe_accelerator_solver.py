@@ -42,7 +42,7 @@ for i, opt in enumerate(sys.argv[1:]):
             raise ValueError("iseed requires an integer value")
         except ValueError:
             raise ValueError("iseed requires an integer value")
-# Fix the random seed for reproducability
+# Fix the random seed for reproducibility
 np.random.seed(iseed)
 
 

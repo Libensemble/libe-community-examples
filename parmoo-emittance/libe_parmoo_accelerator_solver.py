@@ -56,7 +56,7 @@ for i, opt in enumerate(sys.argv[1:]):
             raise ValueError("iseed requires an integer value")
         except ValueError:
             raise ValueError("iseed requires an integer value")
-# Fix the random seed for reproducability
+# Fix the random seed for reproducibility
 np.random.seed(iseed)
 
 # Create a dummy sim func to give parmoo - libE gets the real sim func
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         persis_info[i] = {}
     persis_info[1]['moop'] = moop
 
-    # Solve the accelerator callibration moop with a 200 sim budget
+    # Solve the accelerator calibration moop with a 200 sim budget
     exit_criteria = {'sim_max': 200, 'wallclock_max': 60}
     H, persis_info, flag = libE(sim_specs, gen_specs, exit_criteria,
                                 persis_info, alloc_specs, libE_specs)

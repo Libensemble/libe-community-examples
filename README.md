@@ -86,17 +86,17 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    External Supervisor: Prof. Anjali Sandip (UND).
 
 8. #### heFFTe / ytopt
-  *Complete Workflows*
+   *Complete Workflows*
 
-  [heFFTe](https://github.com/icl-utk-edu/heffte) is a fast Fourier transform code
-  that is used in many applications and supports heterogeneous hardware. The ``heffte`` subdirectory contains
-  a simple example of libEnsemble launching heFFTe's ``speed3d_c2c`` at various predetermined configurations.
+   [heFFTe](https://github.com/icl-utk-edu/heffte) is a fast Fourier transform code
+   that is used in many applications and supports heterogeneous hardware. The ``heffte`` subdirectory contains
+   a simple example of libEnsemble launching heFFTe's ``speed3d_c2c`` at various predetermined configurations.
 
-  [ytopt](https://github.com/ytopt-team/ytopt) is a Bayesian Optimization package for
-  determining optimal input parameter configurations for applications or other executables. The ``ytopt_heffte`` subdirectory
-  contains the ``ytopt_asktell`` generator function for providing runtime results to ytopt and prompting it for subsequent parameter
-  configurations and a ``test_ytopt_heffte.py`` script for coupling ytopt to heFFTe application instances
-  (launched with ``ytopt_obj.py``) via libEnsemble.
+   [ytopt](https://github.com/ytopt-team/ytopt) is a Bayesian Optimization package for
+   determining optimal input parameter configurations for applications or other executables. The ``ytopt_heffte`` subdirectory
+   contains the ``ytopt_asktell`` generator function for providing runtime results to ytopt and prompting it for subsequent parameter
+   configurations and a ``test_ytopt_heffte.py`` script for coupling ytopt to heFFTe application instances
+   (launched with ``ytopt_obj.py``) via libEnsemble.
 
 9. #### Ax multi-task
    *Optimization Generator Function*

@@ -84,3 +84,9 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 
    James Chegwidden, and Kuang Hsu Wang (ANL/UND in Summer 2022).
    External Supervisor: Prof. Anjali Sandip (UND).
+
+8. #### Ax multi-task
+   *Optimization Generator Function*
+
+   A generator function for Bayesian optimization with a Gaussian process. Currently requires ``ax-platform<=0.4.0``
+   Current workflows using Ax + libEnsemble are accomplished with [Optimas](https://optimas.readthedocs.io/en/latest/).

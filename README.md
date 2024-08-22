@@ -86,7 +86,7 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    External Supervisor: Prof. Anjali Sandip (UND).
 
 8. #### heFFTe / ytopt
-  *Complete Workflows*
+   *Complete Workflows*
 
   [heFFTe](https://github.com/icl-utk-edu/heffte) is a fast Fourier transform code
   that is used in many applications and supports heterogeneous hardware. The ``heffte`` subdirectory contains

@@ -97,3 +97,8 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
   contains the ``ytopt_asktell`` generator function for providing runtime results to ytopt and prompting it for subsequent parameter
   configurations and a ``test_ytopt_heffte.py`` script for coupling ytopt to heFFTe application instances
   (launched with ``ytopt_obj.py``) via libEnsemble.
+
+9. #### Ax multi-task
+   *Optimization Generator Function*
+
+   A generator function for Bayesian optimization with a Gaussian process. Currently requires ``ax-platform<=0.4.0``

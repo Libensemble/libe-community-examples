@@ -14,13 +14,6 @@ persistent generator.
 Requires numpy<2.
 """
 
-# Do not change these lines - they are parsed by run-tests.sh
-# TESTSUITE_COMMS: local mpi
-# TESTSUITE_NPROCS: 5
-# TESTSUITE_EXTRA: true
-# TESTSUITE_OS_SKIP: OSX
-# TESTSUITE_EXCLUDE: true
-
 import warnings
 
 import numpy as np

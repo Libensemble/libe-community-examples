@@ -83,10 +83,10 @@ jobs:
         run: |
           cd vtmop; python test_vtmop.py --comms local --nworkers 5
           cd ../deap; python test_deap_nsga2.py --comms local --nworkers 4
-          cd ../consensus; python test_persistent_independent.py --comms local --nworkers 4
-          python test_persistent_n_agent.py --comms local --nworkers 4
-          python test_persistent_pds.py --comms local --nworkers 4
-          python test_persistent_prox_slide.py --comms local --nworkers 4
+          cd ../consensus; python test_persistent_independent.py --comms local --nworkers 5
+          python test_persistent_n_agent.py --comms local --nworkers 5
+          python test_persistent_pds.py --comms local --nworkers 5
+          python test_persistent_prox_slide.py --comms local --nworkers 5
           cd ../heffte_ytopt/ytopt_heffte/; python test_ytopt_heffte.py --comms local --nworkers 4
           cd ../heffte; python test_heffte.py --comms local --nworkers 4
           cd ../../ax-multitask; python test_persistent_gp_multitask_ax.py --comms local --nworkers 4

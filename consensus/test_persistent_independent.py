@@ -22,7 +22,7 @@ import sys
 import numpy as np
 import scipy.sparse as spp
 
-from libensemble.alloc_funcs.start_persistent_consensus import start_consensus_persistent_gens as alloc_f
+from start_persistent_consensus import start_consensus_persistent_gens as alloc_f
 from gens.persistent_independent_optimize import independent_optimize as gen_f
 from libensemble.libE import libE
 from sims.rosenbrock import rosenbrock_eval as sim_f

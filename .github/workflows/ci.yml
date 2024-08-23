@@ -1,8 +1,8 @@
 name: test-community-examples
+
 on:
-    schedule:
-        - cron: '0 14 * * 2'
-jobs:
+  workflow_dispatch:
+
     test-community-examples:
 
         runs-on: ubuntu-latest

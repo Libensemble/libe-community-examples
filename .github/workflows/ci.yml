@@ -37,8 +37,10 @@ jobs:
           pip install scipy
           pip install libensemble
 
-      - name: Install Ubuntu compilers
-        run: conda install gcc_linux-64
+      - name: Install Ubuntu compilers, MPI
+        run: |
+          conda install gcc_linux-64
+          conda install mpich mpi4py
 
       - name: Build ytopt and dependencies
         run: |

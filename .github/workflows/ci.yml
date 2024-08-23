@@ -9,6 +9,7 @@ jobs:
       runs-on: ubuntu-latest
 
       env:
+          HYDRA_LAUNCHER: "fork"
           TERM: xterm-256color
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -23,7 +24,7 @@ jobs:
         with:
           activate-environment: condaenv
           miniconda-version: "latest"
-          python-version: 3.11
+          python-version: 3.10
           channels: conda-forge
           channel-priority: flexible
           auto-update-conda: true
@@ -40,7 +41,6 @@ jobs:
         run: conda install gcc_linux-64
 
       - name: Build ytopt and dependencies
-        if: matrix.python-version <= '3.10' && matrix.os != 'macos-latest'
         run: |
           pip install scikit-learn==1.4.0
           pip install pandas==2.2.1

@@ -25,7 +25,7 @@ from libensemble.libE import libE
 from libensemble.alloc_funcs.start_only_persistent import only_persistent_gens as alloc_f
 from libensemble.tools import parse_args, add_unique_random_streams
 from libensemble.sim_funcs.six_hump_camel import six_hump_camel_func
-from libensemble.gen_funcs.persistent_deap_nsga2 import deap_nsga2 as gen_f
+from persistent_deap_nsga2 import deap_nsga2 as gen_f
 
 nworkers, is_manager, libE_specs, _ = parse_args()
 

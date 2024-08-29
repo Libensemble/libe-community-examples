@@ -35,7 +35,7 @@ jobs:
           pip install -I --upgrade certifi
           pip install deap
           pip install scipy
-          pip install libensemble
+          pip install --upgrade git+https://github.com/Libensemble/libensemble.git@develop
 
       - name: Install Ubuntu compilers, MPI, nlopt
         run: |

@@ -3,12 +3,6 @@ Test libEnsemble's integration with calling the heFFTe executable with various
 configurations.
 """
 
-# Do not change these lines - they are parsed by run-tests.sh
-# TESTSUITE_COMMS: mpi
-# TESTSUITE_NPROCS: 2 4
-# TESTSUITE_EXTRA: true
-# TESTSUITE_OS_SKIP: OSX
-
 import itertools
 from os.path import exists
 

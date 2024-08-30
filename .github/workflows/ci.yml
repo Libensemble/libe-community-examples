@@ -1,50 +1,92 @@
 name: test-community-examples
+
 on:
-    schedule:
-        - cron: '0 14 * * 2'
+  workflow_dispatch:
+
 jobs:
-    test-community-examples:
+  test-community-examples:
 
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
+      runs-on: ubuntu-latest
 
-        env:
-            TERM: xterm-256color
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      env:
+          HYDRA_LAUNCHER: "fork"
+          TERM: xterm-256color
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        defaults:
-            run:
-                shell: bash -l {0}
+      defaults:
+          run:
+              shell: bash -l {0}
 
-        steps:
-        - uses: actions/checkout@v2
-        - name: Setup conda
-          uses: conda-incubator/setup-miniconda@v2
-          with:
-            activate-environment: condaenv
-            miniconda-version: "latest"
-            python-version: 3.8
-            channels: conda-forge
-            channel-priority: flexible
-            auto-update-conda: true
+      steps:
+      - uses: actions/checkout@v2
+      - name: Setup conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: condaenv
+          miniconda-version: "latest"
+          python-version: "3.10"
+          channels: conda-forge
+          channel-priority: flexible
+          auto-update-conda: true
 
-        - name: Force-update certifi, dependencies, install libEnsemble
-          run: |
-            python --version
-            pip install -I --upgrade certifi
-            pip install deap
-            pip install scipy
-            pip install libensemble
+      - name: Force-update certifi, dependencies, install libEnsemble
+        run: |
+          python --version
+          pip install -I --upgrade certifi
+          pip install deap
+          pip install scipy
+          pip install --upgrade git+https://github.com/Libensemble/libensemble.git@develop
 
-        - name: Install Ubuntu compilers
-          run: conda install gcc_linux-64
+      - name: Install Ubuntu compilers, MPI, nlopt
+        run: |
+          conda install gcc_linux-64
+          conda install mpich mpi4py
+          conda install nlopt
 
-        - name: Run tests
-          run: |
-            cd vtmop; python test_vtmop.py --comms local --nworkers 5
-            cd ../deap; python test_deap_nsga2.py --comms local --nworkers 4
-            cd ../consensus; python test_persistent_independent.py --comms local --nworkers 4
-            python test_persistent_n_agent.py --comms local --nworkers 4
-            python test_persistent_pds.py --comms local --nworkers 4
-            python test_persistent_prox_slide.py --comms local --nworkers 4
+      - name: Build ytopt and dependencies
+        run: |
+          pip install scikit-learn==1.4.0
+          pip install pandas==2.2.1
+          pip install ConfigSpace
+          pip install "ray[default]"
+          git clone https://github.com/ytopt-team/scikit-optimize.git
+          cd scikit-optimize
+          pip install .
+          cd ..
+          git clone -b version1 https://github.com/ytopt-team/autotune.git
+          cd autotune
+          pip install .
+          cd ..
+          git clone -b main https://github.com/ytopt-team/ytopt.git
+          cd ytopt
+          pip install .
+          cd ..
+
+      - name: Build heffte
+        run: |
+          # begin heffte build and dependencies
+          sudo apt install libfftw3-dev
+          git clone https://github.com/icl-utk-edu/heffte.git
+          mkdir heffte/build
+          cd heffte/build
+          pwd
+          cmake -D CMAKE_BUILD_TYPE=Release -D BUILD_SHARED_LIBS=ON -D CMAKE_INSTALL_PREFIX=./ -D Heffte_ENABLE_AVX=ON -D Heffte_ENABLE_FFTW=ON ../
+          make -j 4
+          make install
+          cp ./benchmarks/speed3d_c2c ../../heffte_ytopt/ytopt_heffte/
+          # end heffte build and dependencies
+
+      - name: Install ax-platform
+        run: pip install "ax-platform<=0.4.0"
+
+      - name: Run tests
+        run: |
+          cd vtmop; python test_vtmop.py --comms local --nworkers 5
+          cd ../deap; python test_deap_nsga2.py --comms local --nworkers 4
+          cd ../consensus; python test_persistent_independent.py --comms local --nworkers 5
+          python test_persistent_n_agent.py --comms local --nworkers 5
+          python test_persistent_pds.py --comms local --nworkers 5
+          python test_persistent_prox_slide.py --comms local --nworkers 5
+          cd ../heffte_ytopt/ytopt_heffte/; python test_ytopt_heffte.py --comms local --nworkers 4
+          cd ../heffte; python test_heffte.py --comms local --nworkers 4
+          cd ../../ax-multitask; python test_persistent_gp_multitask_ax.py --comms local --nworkers 4

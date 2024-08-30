@@ -9,12 +9,6 @@ Execute locally via one of the following commands (e.g. 3 workers):
 The number of concurrent evaluations of the objective function will be 4-1=3.
 """
 
-# Do not change these lines - they are parsed by run-tests.sh
-# TESTSUITE_COMMS: mpi
-# TESTSUITE_NPROCS: 3
-# TESTSUITE_EXTRA: true
-# TESTSUITE_OS_SKIP: OSX
-
 import warnings
 
 # A ytopt dependency uses an ImportWarning

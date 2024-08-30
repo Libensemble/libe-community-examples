@@ -10,22 +10,16 @@ the objective function will be 2, as one of the three workers will be the
 persistent generator.
 """
 
-# Do not change these lines - they are parsed by run-tests.sh
-# TESTSUITE_COMMS: mpi local
-# TESTSUITE_NPROCS: 6
-# TESTSUITE_OS_SKIP: OSX
-# TESTSUITE_EXTRA: true
-
 
 import sys
 
 import numpy as np
 import scipy.sparse as spp
 
-from libensemble.alloc_funcs.start_persistent_consensus import start_consensus_persistent_gens as alloc_f
+from start_persistent_consensus import start_consensus_persistent_gens as alloc_f
 from gens.persistent_independent_optimize import independent_optimize as gen_f
 from libensemble.libE import libE
-from sims.rosenbrock import rosenbrock_eval as sim_f
+from sims.alt_rosenbrock import alt_rosenbrock_eval as sim_f
 from libensemble.tools import add_unique_random_streams, parse_args
 from consensus_subroutines import get_k_reach_chain_matrix
 

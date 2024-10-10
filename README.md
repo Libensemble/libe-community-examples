@@ -101,4 +101,12 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 9. #### Ax multi-task
    *Optimization Generator Function*
 
-   A generator function for Bayesian optimization with a Gaussian process. Currently requires ``ax-platform<=0.4.0``
+   A generator function for Bayesian optimization with a Gaussian process. Currently requires
+   ``ax-platform<=0.4.0``
+
+10. #### GP Dragonfly
+  *Optimization Generator Function*
+
+  Another generator function for Bayesian optimization with a Gaussian process, using `dragonfly`. Previous
+  working versions of the included test required the following fork: `https://github.com/jlnav/dragonfly`,
+  since upstream no longer appears under active development.

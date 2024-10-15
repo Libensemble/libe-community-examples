@@ -38,7 +38,7 @@ if __name__ == "__main__":
     m = 16
     n = 32
     num_gens = 4
-    eps = 1e-2
+    eps = 1e-4
 
     # Even though we do not use consensus matrix, we still need to pass into alloc
     A = spp.diags([1, 2, 2, 1]) - get_k_reach_chain_matrix(num_gens, 1)

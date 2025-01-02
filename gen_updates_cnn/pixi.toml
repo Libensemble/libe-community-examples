@@ -11,6 +11,8 @@ version = "0.1.0"
 [dependencies]
 python = "<=3.12"
 libensemble = ">=1.4.3,<2"
+black = ">=24.10.0,<25"
+ipdb = ">=0.13.13,<0.14"
 
 [pypi-dependencies]
 torch = ">=2.5.1, <3"

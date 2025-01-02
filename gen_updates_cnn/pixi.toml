@@ -1,0 +1,17 @@
+[project]
+authors = ["jlnav <jnavarro@anl.gov>"]
+channels = ["conda-forge"]
+description = "Add a short description here"
+name = "libe-community-examples"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "<=3.12"
+libensemble = ">=1.4.3,<2"
+
+[pypi-dependencies]
+torch = ">=2.5.1, <3"
+torchvision = ">=0.20.1, <0.21"

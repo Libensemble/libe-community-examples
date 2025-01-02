@@ -1,4 +1,3 @@
-
 import numpy as np
 
 from libensemble import Ensemble
@@ -8,7 +7,9 @@ from libensemble.specs import ExitCriteria, AllocSpecs, SimSpecs, GenSpecs
 if __name__ == "__main__":
 
     n_samples = 4
-    init_history = np.zeros(n_samples, dtype=[("weights", object), ("acc", float), ("sim_id", int)])
+    init_history = np.zeros(
+        n_samples, dtype=[("weights", object), ("acc", float), ("sim_id", int)]
+    )
     init_history["weights"] = [None] * n_samples
     init_history["acc"] = [0.0] * n_samples
     init_history["sim_id"] = range(n_samples)
@@ -37,4 +38,3 @@ if __name__ == "__main__":
 
     ensemble.run()
     ensemble.print_stats()
-

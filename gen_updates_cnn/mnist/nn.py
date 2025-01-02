@@ -87,8 +87,6 @@ class Net(nn.Module):
         )
 
 
-
-
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
@@ -197,10 +195,11 @@ def main():
 
     if args.save_model:
         torch.save(model.state_dict(), "mnist_cnn.pt")
-        
+
     print("MODEL'S LAST LAYER GRAD: ", model.fc2.weight.grad)
     print("MODEL'S TOTAL TRAINING LOSS: ", model.total_train_loss)
     print("MODEL'S TOTAL TESTING LOSS: ", model.total_test_loss)
+
 
 if __name__ == "__main__":
     main()

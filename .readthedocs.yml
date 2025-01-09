@@ -4,11 +4,11 @@ build:
   os: "ubuntu-22.04"
   tools:
     python: "3.10"
+  commands:
+    - asdf plugin add pixi
+    - asdf install pixi latest
+    - asdf global pixi latest
+    - pixi shell
 
 sphinx:
     configuration: docs/conf.py
-
-python:
-    install:
-      - method: pip
-        path: .

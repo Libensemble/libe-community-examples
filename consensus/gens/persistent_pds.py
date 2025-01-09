@@ -14,6 +14,7 @@ from consensus_subroutines import (
     print_final_score,
 )
 
+__all__ = ["opt_slide"]
 
 def opt_slide(H, persis_info, gen_specs, libE_info):
     """Gradient sliding. Coordinates with alloc to do local and distributed

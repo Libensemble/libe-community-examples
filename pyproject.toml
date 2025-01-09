@@ -1,7 +1,5 @@
 [project]
-authors = [{name = "Jeffrey Larson"}, {name = "Stephen Hudson"},
-            {name = "Stefan M. Wild"}, {name = "David Bindel"},
-            {name = "John-Luke Navarro"}]
+authors = [{name = "libEnsemble Users"}]
 
 description = "libEnsemble community examples"
 name = "libe-community-examples"

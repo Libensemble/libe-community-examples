@@ -11,7 +11,7 @@ from consensus_subroutines import get_func, get_grad, print_final_score
 __all__ = ["independent_optimize"]
 
 def independent_optimize(H, persis_info, gen_specs, libE_info):
-    """Uses scipy.optimize to solve objective function"""
+    """Uses scipy.optimize to optimize the objective function"""
     ub = gen_specs["user"]["ub"]
     lb = gen_specs["user"]["lb"]
 

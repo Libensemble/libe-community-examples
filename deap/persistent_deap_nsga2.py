@@ -1,5 +1,5 @@
 """
-This module contains functions for implementing an persistent NSGA2 generator
+This module contains functions for implementing a persistent NSGA2 generator
 function. The evaluation of the fitness of the current population's members
 occurs in `evaluate_pop`, where the points are communicated to the libEnsemble
 manager; the manager coordinates their evaluation and then returns their

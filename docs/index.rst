@@ -7,25 +7,52 @@ more information.
 
 :doc:`Main libEnsemble Documentation<main:index>`
 
+vtmop
+-----
+.. automodule:: vtmop
+  :members:
+
 persistent_deap_nsga2
 ---------------------
 
 Required: DEAP_
 
 .. automodule:: persistent_deap_nsga2
-  :members:
+  :members: deap_nsga2
   :undoc-members:
 
+Consensus Generators
+--------------------
 
-vtmop
+.. automodule:: gens.persistent_independent_optimize
+  :members: independent_optimize
+
+.. automodule:: gens.persistent_n_agent
+  :members: n_agent
+
+.. automodule:: gens.persistent_pds
+  :members: opt_slide
+
+.. automodule:: gens.persistent_prox_slide
+  :members: opt_slide
+
+ytopt
 -----
-.. automodule:: vtmop
+
+.. automodule:: ytopt_heffte.ytopt_asktell
   :members:
 
-Consensus Subroutines
----------------------
+Ax-Multitask
+------------
 
-.. automodule:: consensus_subroutines
+.. automodule:: persistent_ax_multitask
+  :members: persistent_gp_mt_ax_gen_f
+
+GP Dragonfly
+------------
+
+.. automodule:: persistent_gp
+  :members: persistent_gp_gen_f
 
 .. _DEAP: https://deap.readthedocs.io/en/master/overview.html
 .. _`community repository`: https://github.com/Libensemble/libe-community-examples

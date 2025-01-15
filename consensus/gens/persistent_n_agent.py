@@ -9,6 +9,7 @@ import numpy as np
 from libensemble.message_numbers import FINISHED_PERSISTENT_GEN_TAG, PERSIS_STOP, STOP_TAG
 from consensus_subroutines import get_grad, get_neighbor_vals, print_final_score
 
+__all__ = ["n_agent"]
 
 def n_agent(H, persis_info, gen_specs, libE_info):
     """Gradient sliding. Coordinates with alloc to do local and distributed

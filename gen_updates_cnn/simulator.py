@@ -7,14 +7,16 @@ from libensemble.tools.persistent_support import PersistentSupport
 
 from mnist.nn import main as run_cnn
 
+
 def _run_cnn_send(sim_specs, weights=None):
 
-    Output = np.zeros(1, dtype=sim_specs['out'])
+    Output = np.zeros(1, dtype=sim_specs["out"])
 
     grad, train_loss, test_loss = run_cnn(weights)  # initial
     Output["grad"] = grad
     Output["loss"] = train_loss + test_loss
     ps.send(Output)
+
 
 @persistent_input_fields(["weights"])
 @output_data([("loss", float), ("grad", object, (10, 128))])

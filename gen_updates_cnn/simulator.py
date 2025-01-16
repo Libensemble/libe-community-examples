@@ -8,7 +8,7 @@ from libensemble.tools.persistent_support import PersistentSupport
 from mnist.nn import main as run_cnn
 
 @persistent_input_fields(["weights"])
-@output_data([("acc", float), ("grad", object)])
+@output_data([("loss", float), ("grad", object, (10, 128))])
 def mnist_training_sim(H, _, sim_specs, info):
 
     ps = PersistentSupport(info, EVAL_SIM_TAG)

@@ -201,7 +201,7 @@ def main():
     print("MODEL'S TOTAL TRAINING LOSS: ", model.total_train_loss)
     print("MODEL'S TOTAL TESTING LOSS: ", model.total_test_loss)
 
-    return model.fc2.weight.grad.cpu(), model.total_train_loss, model.total_test_loss
+    return model.fc2.weight.grad.cpu(), model.total_train_loss.cpu().detach().numpy(), model.total_test_loss
 
 
 if __name__ == "__main__":

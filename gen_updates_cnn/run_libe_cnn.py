@@ -9,11 +9,9 @@ if __name__ == "__main__":
 
     n_samples = 4
     init_history = np.zeros(
-        n_samples, dtype=[("weights", object), ("grad", object), ("acc", float), ("sim_id", int)]
+        n_samples, dtype=[("weights", object), ("grad", object, (10, 128)), ("loss", float), ("sim_id", int)]
     )
-    init_history["weights"] = [None] * n_samples
-    init_history["grad"] = [None] * n_samples
-    init_history["acc"] = [0.0] * n_samples
+    init_history["loss"] = [0.0] * n_samples
     init_history["sim_id"] = range(n_samples)
 
     # Create the ensemble
@@ -38,3 +36,4 @@ if __name__ == "__main__":
     ensemble.exit_criteria = ExitCriteria(sim_max=4)
 
     ensemble.run()
+    ensemble.save_output()

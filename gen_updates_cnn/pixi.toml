@@ -7,7 +7,7 @@ platforms = ["osx-arm64"]
 version = "0.1.0"
 
 [tasks]
-clean = "rm -rf *.log *.txt, *.npy"
+clean = "rm -rf ensemble.log *.pickle *.npy libE_stats.txt"
 
 [dependencies]
 python = "<=3.12"

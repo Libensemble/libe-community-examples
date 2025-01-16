@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
+import sys
 
 
 class Net(nn.Module):
@@ -156,7 +157,7 @@ def main():
         default=False,
         help="For Saving the current Model",
     )
-    args = parser.parse_args()
+    args = parser.parse_args([])  # avoid conflict with libensemble args
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     use_mps = not args.no_mps and torch.backends.mps.is_available()
 
@@ -199,6 +200,8 @@ def main():
     print("MODEL'S LAST LAYER GRAD: ", model.fc2.weight.grad)
     print("MODEL'S TOTAL TRAINING LOSS: ", model.total_train_loss)
     print("MODEL'S TOTAL TESTING LOSS: ", model.total_test_loss)
+
+    return model.fc2.weight.grad.cpu(), model.total_train_loss, model.total_test_loss
 
 
 if __name__ == "__main__":

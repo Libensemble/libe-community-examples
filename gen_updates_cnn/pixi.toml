@@ -7,6 +7,7 @@ platforms = ["osx-arm64"]
 version = "0.1.0"
 
 [tasks]
+clean = "rm -rf *.log *.txt, *.npy"
 
 [dependencies]
 python = "<=3.12"

@@ -15,15 +15,28 @@ class Mock(MagicMock):
 
 MOCK_MODULES = [
         'deap',
-        'vtmop.vtmop'
-        'consensus'
+        'vtmop.vtmop',
+        'consensus.gens',
+        'dragonfly',
+        'dragonfly.opt',
+        'dragonfly.opt.gp_bandit',
+        'dragonfly.exd',
+        'dragonfly.exd.cp_domain_utils',
+        'dragonfly.exd.domains',
+        'dragonfly.exd.experiment_caller'
         ]
 
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
+sys.path.append(os.path.abspath('../ax-multitask'))
+sys.path.append(os.path.abspath('../consensus'))
+sys.path.append(os.path.abspath('../consensus/gens'))
 sys.path.append(os.path.abspath('../deap'))
 sys.path.append(os.path.abspath('../vtmop'))
-sys.path.append(os.path.abspath('../consensus'))
+sys.path.append(os.path.abspath('../heffte_ytopt/'))
+sys.path.append(os.path.abspath('../icesheet/gen_funcs'))
+sys.path.append(os.path.abspath('../parmoo-emittance'))
+sys.path.append(os.path.abspath('../gp_dragonfly'))
 
 # -- General configuration ------------------------------------------------
 
@@ -68,7 +81,7 @@ today_fmt = '%B %-d, %Y'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

@@ -11,6 +11,12 @@ __all__ = ["persistent_ytopt"]
 
 
 def persistent_ytopt(H, persis_info, gen_specs, libE_info):
+    """ 
+    Receives an initialized ytopt optimizer and cyclically asks for points, sends those
+    to libEnsemble, receives results from libEnsemble, then tells those results to the ytopt optimizer.
+    
+    See the ytopt docs (https://github.com/ytopt-team/ytopt) for more information about the ytopt optimizer.
+    """
     ps = PersistentSupport(libE_info, EVAL_GEN_TAG)
     user_specs = gen_specs["user"]
     ytoptimizer = user_specs["ytoptimizer"]

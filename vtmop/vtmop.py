@@ -1,6 +1,6 @@
 """
 Wrapper for the VTMOP genfuncs drivers, for solving multiobjective
-optimization problems with arbitrary number of objectives.
+optimization problems with an arbitrary number of objectives.
 """
 import numpy as np
 import ctypes
@@ -27,7 +27,7 @@ def vtmop_gen(H, persis_info, gen_specs, _):
 
      After the Fortran and C binaries have been built, VTMOP's Python wrapper
      will be automatically imported every time the generator is called without
-     need to recompile. Note that this wrapper uses a .so file, which is only
+     the need to recompile. Note that this wrapper uses a .so file, which is only
      supported by Mac and Linux/Unix systems (will not work on Windows).
 
      All inputs and arguments to VTMOP are specified through the
@@ -80,7 +80,7 @@ def vtmop_gen(H, persis_info, gen_specs, _):
 
          gen_specs['user']['decay'] (float): specifies the decay rate for the
              local trust region (LTR) radius. This value affects how many
-             times an isolated point can be the center of a LTR before it i
+             times an isolated point can be the center of an LTR before it is
              discarded. By default, DECAY = 0.5.
 
          gen_specs['user']['des_tol'] (float): the tolerance for the design
@@ -118,7 +118,7 @@ def vtmop_gen(H, persis_info, gen_specs, _):
              is used to prune the list of potential LTR centers, so
              that only objective values in the specified range are used when
              looking for gaps in the Pareto. In particular, an objective value
-             F(x) will be considered for a LTR center if and only if
+             F(x) will be considered for an LTR center if and only if
              OBJ_BOUNDS(I,1) .LE. F_I(x) .LE. OBJ_BOUNDS(I,2) for all
              I = 1, ..., P. By default, there are no bounds on the interesting
              range. Note that this value is intentionally not saved during

@@ -36,4 +36,4 @@ if __name__ == "__main__":
     ensemble.exit_criteria = ExitCriteria(sim_max=4)
 
     ensemble.run()
-    ensemble.save_output()
+    ensemble.save_output(__file__)

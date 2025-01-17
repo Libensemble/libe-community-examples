@@ -20,9 +20,9 @@ def optimize_cnn(H, persis_info, gen_specs, libE_info):
     tag = None
 
     while True:
+        History = np.zeros(1, dtype=gen_specs["out"])
         if not initial_complete:
             # We somehow need to send something, the sim inits itself
-            History = np.zeros(1, dtype=gen_specs["out"])
             History["weights"] = 0  # will be disregarded by first persis sim anyway
             initial_complete = True
         else:

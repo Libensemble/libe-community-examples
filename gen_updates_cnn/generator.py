@@ -11,9 +11,12 @@ import torch.optim as optim
 
 
 def _create_new_weights(loss, grad, params):
-    optimizer = optim.Adadelta(chain(params), lr=1.0)
+    chain_params = chain(params)
+    optimizer = optim.Adadelta(chain_params, lr=1.0)
     optimizer.zero_grad(set_to_none=True)
+    before_params = [i.clone().detach().numpy() for i in params]
     [optimizer.step() for _ in range(100)]
+    after_params = [i.clone().detach().numpy() for i in optimizer.param_groups[0]['params']]
     # now what...?
     return 0
 

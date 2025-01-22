@@ -203,7 +203,7 @@ def main(new_net=None):
 
     # scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)  # WILL GO TO GEN?
     for epoch in range(1, args.epochs + 1):
-        model.train_model(args, device, train_loader, optimizer, epoch)
+        model.train_model(args, device, train_loader, None, epoch)
         model.test_model(device, test_loader)
         # scheduler.step()  # WILL GO TO GEN?
 

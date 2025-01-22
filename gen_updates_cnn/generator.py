@@ -6,12 +6,13 @@ from libensemble.message_numbers import PERSIS_STOP, STOP_TAG, EVAL_GEN_TAG, WOR
 from libensemble.specs import output_data, persistent_input_fields
 from libensemble.tools.persistent_support import PersistentSupport
 
+import torch
 import torch.optim as optim
 
 
-def _create_new_weights(loss, grad, parameters):
-    
-    optimizer = optim.Adadelta(chain(parameters), lr=1.0)
+def _create_new_weights(loss, grad, params):\
+
+    optimizer = optim.Adadelta(chain(params), lr=1.0)
     optimizer.zero_grad(set_to_none=True)
     [optimizer.step() for _ in range(100)]
     # now what...?
@@ -20,9 +21,9 @@ def _create_new_weights(loss, grad, parameters):
 
 @persistent_input_fields(["loss", "grad", "parameters"])
 @output_data([("weights", object)])
-def optimize_cnn(H, persis_info, gen_specs, libE_info):
+def optimize_cnn(H, _, gen_specs, libE_info):
 
-    ps = PersistentSupport(persis_info, EVAL_GEN_TAG)
+    ps = PersistentSupport(libE_info, EVAL_GEN_TAG)
     initial_complete = False
     tag = None
 
@@ -37,9 +38,10 @@ def optimize_cnn(H, persis_info, gen_specs, libE_info):
             if tag in [PERSIS_STOP, STOP_TAG]:
                 break
 
-            loss = Work["loss"]
-            grad = Work["grad"]
-            parameters = Work["parameters"]
-            History["weights"] = _create_new_weights(loss, grad, parameters)
+            loss = calc_in["loss"]
+            grad = calc_in["grad"]
+            params = calc_in["parameters"][0]
+            params = [torch.from_numpy(i) for i in params]
+            History["weights"] = _create_new_weights(loss, grad, params)
 
         ps.send(History)

@@ -10,21 +10,26 @@ weights are sent back to the workers.
 
 ## Setup
 
-`pip install -e .` in this directory.
-
 If using pixi, `pixi shell`.
+
+Otherwise, install:
+
+```
+torch = ">=2.5.1, <3"
+torchvision = ">=0.20.1, <0.21"
+```
 
 ## Simulator
 
-Runs `minst/nn.py`'s model training code (`main()`) and sends
+Runs `minst/nn.py`'s model training code. Sends
 the training loss, model parameters, and last layer's gradient to
-the generator. Subsequent runs reinitialize the model based on
-new weights from the generator.
+the generator. Subsequent runs reinitialize the model using
+optimized weights from the generator.
 
 ## Generator
 
 Receives training loss, model parameters, and gradient from each worker,
-sums each, performs optimization, and sends updated model weights back
+sums each, performs optimization, and sends optimized model parameters back
 to each worker.
 
 ## mnist directory

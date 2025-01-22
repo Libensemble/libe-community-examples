@@ -10,8 +10,7 @@ import torch
 import torch.optim as optim
 
 
-def _create_new_weights(loss, grad, params):\
-
+def _create_new_weights(loss, grad, params):
     optimizer = optim.Adadelta(chain(params), lr=1.0)
     optimizer.zero_grad(set_to_none=True)
     [optimizer.step() for _ in range(100)]

@@ -20,7 +20,9 @@ def _run_cnn_send(generator, sim_specs, weights=None):
 
 @input_fields(["weights"])
 @persistent_input_fields(["weights"])
-@output_data([("loss", float), ("grad", float, (10, 128)), ("parameters", object, (8,))])
+@output_data(
+    [("loss", float), ("grad", float, (10, 128)), ("parameters", object, (8,))]
+)
 def mnist_training_sim(H, _, sim_specs, info):
 
     generator = ToGenerator(info, EVAL_SIM_TAG)

@@ -1,8 +1,8 @@
 [project]
 authors = ["jlnav <jnavarro@anl.gov>"]
 channels = ["conda-forge"]
-description = "Add a short description here"
-name = "libe-community-examples"
+description = "Distributed CNN Optimization with libEnsemble"
+name = "gen_updates_cnn"
 platforms = ["osx-arm64"]
 version = "0.1.0"
 
@@ -12,9 +12,15 @@ clean = "rm -rf ensemble.log *.pickle *.npy libE_stats.txt"
 [dependencies]
 python = "<=3.12"
 libensemble = ">=1.4.3,<2"
-black = ">=24.10.0,<25"
-ipdb = ">=0.13.13,<0.14"
 
 [pypi-dependencies]
 torch = ">=2.5.1, <3"
 torchvision = ">=0.20.1, <0.21"
+
+[environments]
+default = []
+dev = ["dev"]
+
+[feature.dev.dependencies]
+ipdb = ">=0.13.13,<0.14"
+black = ">=24.10.0,<25"

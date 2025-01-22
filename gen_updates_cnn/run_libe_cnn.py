@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     # Create the ensemble
     ensemble = Ensemble(parse_args=True)
-    
+
     ensemble.libE_specs.gen_on_manager = True
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim)

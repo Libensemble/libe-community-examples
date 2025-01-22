@@ -12,9 +12,9 @@ def _run_cnn_send(sim_specs, weights=None):
 
     Output = np.zeros(1, dtype=sim_specs["out"])
 
-    grad, train_loss, test_loss, parameters = run_cnn(weights)  # initial
+    grad, train_loss, parameters = run_cnn(weights)  # initial
     Output["grad"] = grad
-    Output["loss"] = train_loss + test_loss
+    Output["loss"] = train_loss
     Output["parameters"] = parameters
     ps.send(Output)
 

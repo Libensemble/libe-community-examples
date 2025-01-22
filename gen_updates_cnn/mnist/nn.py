@@ -30,7 +30,6 @@ class Net(nn.Module):
             # https://stackoverflow.com/questions/49433936/how-do-i-initialize-weights-in-pytorch
             self.apply(_init_weights)
         self.total_train_loss = 0
-        self.total_test_loss = 0
 
     def forward(self, x):
         x = self.conv1(x)
@@ -82,7 +81,6 @@ class Net(nn.Module):
                 test_loss += F.nll_loss(
                     output, target, reduction="sum"
                 ).item()  # sum up batch loss
-                self.total_test_loss += test_loss
                 pred = output.argmax(
                     dim=1, keepdim=True
                 )  # get the index of the max log-probability
@@ -211,9 +209,8 @@ def main(weights=None):
 
     print("MODEL'S LAST LAYER GRAD: ", model.fc2.weight.grad)
     print("MODEL'S TOTAL TRAINING LOSS: ", model.total_train_loss)
-    print("MODEL'S TOTAL TESTING LOSS: ", model.total_test_loss)
 
-    return model.fc2.weight.grad.cpu(), model.total_train_loss.cpu().detach().numpy(), model.total_test_loss, model.parameters()
+    return model.fc2.weight.grad.cpu(), model.total_train_loss.cpu().detach().numpy(), model.parameters()
 
 
 if __name__ == "__main__":

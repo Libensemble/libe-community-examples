@@ -8,20 +8,20 @@ from libensemble.tools.persistent_support import PersistentSupport as ToGenerato
 from mnist.nn import main as run_cnn
 
 
-def _run_cnn_send(generator, sim_specs, weights=None):
+def _run_cnn_send(generator, sim_specs, parameters=None):
 
     Output = np.zeros(1, dtype=sim_specs["out"])
 
-    grad, Output["loss"], params = run_cnn(weights)  # initial
-    Output["grad"] = grad
+    grads, params = run_cnn(parameters)  # initial
+    Output["grads"] = [i.cpu().detach().numpy() for i in grads]
     Output["parameters"] = [i.cpu().detach().numpy() for i in params]
     generator.send(Output)
 
 
-@input_fields(["weights"])
-@persistent_input_fields(["weights"])
+@input_fields(["parameters"])
+@persistent_input_fields(["parameters"])
 @output_data(
-    [("loss", float), ("grad", float, (10, 128)), ("parameters", object, (8,))]
+    [("grads", object, (8,)), ("parameters", object, (8,))]
 )
 def mnist_training_sim(H, _, sim_specs, info):
 
@@ -34,4 +34,4 @@ def mnist_training_sim(H, _, sim_specs, info):
         if tag in [PERSIS_STOP, STOP_TAG]:
             break
 
-        _run_cnn_send(generator, sim_specs, Work["weights"])
+        _run_cnn_send(generator, sim_specs, calc_in["parameters"])

@@ -49,26 +49,29 @@ class Net(nn.Module):
 
     def train_model(self, args, device, train_loader, optimizer, epoch):
         self.train()
-        for batch_idx, (data, target) in enumerate(train_loader):
-            data, target = data.to(device), target.to(device)
-            # optimizer.zero_grad()  # DONT NEED
-            output = self(data)
-            loss = F.nll_loss(output, target)
-            self.total_train_loss += loss
-            loss.backward()
-            # optimizer.step()  # OCCUR IN GEN
-            if batch_idx % args.log_interval == 0:
-                print(
-                    "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                        epoch,
-                        batch_idx * len(data),
-                        len(train_loader.dataset),
-                        100.0 * batch_idx / len(train_loader),
-                        loss.item(),
+        with torch.enable_grad():
+            for batch_idx, (data, target) in enumerate(train_loader):
+                data, target = data.to(device), target.to(device)
+                # optimizer.zero_grad()  # DONT NEED
+                output = self(data)
+                loss = F.nll_loss(output, target)
+                self.total_train_loss += loss
+                loss.backward(retain_graph=True)
+                # optimizer.step()  # OCCUR IN GEN
+                if batch_idx % args.log_interval == 0:
+                    print(
+                        "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                            epoch,
+                            batch_idx * len(data),
+                            len(train_loader.dataset),
+                            100.0 * batch_idx / len(train_loader),
+                            loss.item(),
+                        )
                     )
-                )
-                if args.dry_run:
-                    break
+                    if args.dry_run:
+                        break
+            grads = torch.autograd.grad(loss, self.parameters(), retain_graph=True)
+            return grads
 
     def test_model(self, device, test_loader):
         self.eval()
@@ -125,7 +128,7 @@ def main(new_net=None):
     parser.add_argument(
         "--lr",
         type=float,
-        default=1.0,
+        default=0.1,
         metavar="LR",
         help="learning rate (default: 1.0)",
     )
@@ -148,7 +151,7 @@ def main(new_net=None):
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        default=False,
+        default=True,
         help="quickly check a single pass",
     )
     parser.add_argument(
@@ -203,7 +206,7 @@ def main(new_net=None):
 
     # scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)  # WILL GO TO GEN?
     for epoch in range(1, args.epochs + 1):
-        model.train_model(args, device, train_loader, None, epoch)
+        grads = model.train_model(args, device, train_loader, None, epoch)
         model.test_model(device, test_loader)
         # scheduler.step()  # WILL GO TO GEN?
 
@@ -213,7 +216,7 @@ def main(new_net=None):
     print("MODEL'S LAST LAYER GRAD: ", model.fc2.weight.grad)
     print("MODEL'S TOTAL TRAINING LOSS: ", model.total_train_loss)
 
-    return model.fc2.weight.grad.cpu(), model.total_train_loss.cpu().detach().numpy(), model.parameters()
+    return grads, model.parameters()
 
 
 if __name__ == "__main__":

@@ -9,14 +9,19 @@ from libensemble.tools.persistent_support import PersistentSupport
 import torch
 import torch.optim as optim
 
+# https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
 def _create_new_weights(loss, grad, params):
     chain_params = chain(params)
-    optimizer = optim.Adadelta(chain_params, lr=1.0)
-    optimizer.zero_grad(set_to_none=True)
+    optimizer = optim.Adam(chain_params, lr=1.0)
+    # optimizer.zero_grad(set_to_none=True)
     before_params = [i.clone().detach().numpy() for i in params]
-    [optimizer.step() for _ in range(100)]
+    for _ in range(100):
+        # optimizer.zero_grad(set_to_none=True)
+        optimizer.step()
     after_params = [i.clone().detach().numpy() for i in optimizer.param_groups[0]['params']]
+
+    assert not sum([np.array_equal(i, j) for i, j in zip(before_params, after_params)])
     # now what...?
     return 0
 

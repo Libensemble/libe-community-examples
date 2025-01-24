@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 from libensemble.message_numbers import PERSIS_STOP, STOP_TAG, EVAL_SIM_TAG, WORKER_DONE
 from libensemble.specs import output_data, input_fields, persistent_input_fields
@@ -14,14 +13,14 @@ def _run_cnn_send(generator, sim_specs, parameters=None):
 
     grads, params = run_cnn(parameters)  # initial
     Output["grads"] = [i.cpu().detach().numpy() for i in grads]
-    Output["parameters"] = [i.cpu().detach().numpy() for i in params]
+    Output["output_parameters"] = [i.cpu().detach().numpy() for i in params]
     generator.send(Output)
 
 
-@input_fields(["parameters"])
-@persistent_input_fields(["parameters"])
+@input_fields(["input_parameters"])
+@persistent_input_fields(["input_parameters"])
 @output_data(
-    [("grads", object, (8,)), ("parameters", object, (8,))]
+    [("grads", object, (8,)), ("output_parameters", object, (8,))]
 )
 def mnist_training_sim(H, _, sim_specs, info):
 
@@ -34,4 +33,6 @@ def mnist_training_sim(H, _, sim_specs, info):
         if tag in [PERSIS_STOP, STOP_TAG]:
             break
 
-        _run_cnn_send(generator, sim_specs, calc_in["parameters"])
+        _run_cnn_send(generator, sim_specs, calc_in["input_parameters"])
+
+    return [], {}, 0

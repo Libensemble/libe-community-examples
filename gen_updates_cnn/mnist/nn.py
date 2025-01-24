@@ -41,29 +41,31 @@ class Net(nn.Module):
 
     def train_model(self, args, device, train_loader, optimizer, epoch):
         self.train()
-        with torch.enable_grad():
-            for batch_idx, (data, target) in enumerate(train_loader):
-                data, target = data.to(device), target.to(device)
-                # optimizer.zero_grad()  # DONT NEED
-                output = self(data)
-                loss = F.nll_loss(output, target)
-                self.total_train_loss += loss
-                loss.backward(retain_graph=True)
-                # optimizer.step()  # OCCUR IN GEN
-                if batch_idx % args.log_interval == 0:
-                    print(
-                        "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                            epoch,
-                            batch_idx * len(data),
-                            len(train_loader.dataset),
-                            100.0 * batch_idx / len(train_loader),
-                            loss.item(),
-                        )
+        for batch_idx, (data, target) in enumerate(train_loader):
+            data, target = data.to(device), target.to(device)
+            # optimizer.zero_grad()  # DONT NEED
+            output = self(data)
+            loss = F.nll_loss(output, target)
+            self.total_train_loss += loss
+            # optimizer.step()  # OCCUR IN GEN
+            if batch_idx % args.log_interval == 0:
+                print(
+                    "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                        epoch,
+                        batch_idx * len(data),
+                        len(train_loader.dataset),
+                        100.0 * batch_idx / len(train_loader),
+                        loss.item(),
                     )
-                    if args.dry_run:
-                        break
-            grads = torch.autograd.grad(loss, self.parameters(), retain_graph=True)
-            return grads
+                )
+                if args.dry_run:
+                    break
+            if batch_idx == len(train_loader) - 1:
+                loss.backward(retain_graph=True)
+            else:
+                loss.backward()
+        grads = torch.autograd.grad(loss, self.parameters(), retain_graph=True)
+        return grads
 
     def test_model(self, device, test_loader):
         self.eval()
@@ -93,7 +95,7 @@ class Net(nn.Module):
         )
 
 
-def main(parameters=None):
+def main(parameters=None, sim_seed=None):
     # Training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
     parser.add_argument(
@@ -120,7 +122,7 @@ def main(parameters=None):
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.1,
+        default=1.0,
         metavar="LR",
         help="learning rate (default: 1.0)",
     )
@@ -143,7 +145,7 @@ def main(parameters=None):
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        default=True,
+        default=False,
         help="quickly check a single pass",
     )
     parser.add_argument(
@@ -165,8 +167,10 @@ def main(parameters=None):
     args = parser.parse_args([])  # avoid conflict with libensemble args
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     use_mps = not args.no_mps and torch.backends.mps.is_available()
+    
+    seed = sim_seed if sim_seed is not None else args.seed
 
-    torch.manual_seed(args.seed)
+    torch.manual_seed(seed)
 
     if use_cuda:
         device = torch.device("cuda")

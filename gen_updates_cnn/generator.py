@@ -12,11 +12,12 @@ import torch.optim as optim
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
 def _create_new_parameters(grads, params):
-    optimizer = optim.Adam(params, lr=1.0)
+    optimizer = optim.Adadelta(params, lr=1.0)
     optimizer.zero_grad()
     for i, param in enumerate(params):
         param.grad = grads[i].clone().detach()
-    [optimizer.step() for _ in range(10)]
+    # DONT STEP OPTIMIZER MULTIPLE TIMES WITH SAME GRADIENTS
+    optimizer.step()
     return params
 
 

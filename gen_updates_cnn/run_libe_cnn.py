@@ -12,10 +12,12 @@ if __name__ == "__main__":
     ensemble = Ensemble(parse_args=True)
 
     ensemble.libE_specs.gen_on_manager = True
+    
+    user = {"num_networks": ensemble.nworkers}
 
-    sim_specs = SimSpecs(sim_f=mnist_training_sim)
-    gen_specs = GenSpecs(gen_f=optimize_cnn)
-    alloc_specs = AllocSpecs(alloc_f=only_persistent_gens)
+    sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)
+    gen_specs = GenSpecs(gen_f=optimize_cnn, user=user)
+    alloc_specs = AllocSpecs(alloc_f=only_persistent_gens, user={"alt_type": True})
 
     ensemble.sim_specs = sim_specs
     ensemble.gen_specs = gen_specs

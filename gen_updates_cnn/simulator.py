@@ -7,11 +7,11 @@ from libensemble.tools.persistent_support import PersistentSupport as ToGenerato
 from mnist.nn import main as run_cnn
 
 
-def _run_cnn_send(generator, sim_specs, parameters=None, sim_id=0):
+def _run_cnn_send(generator, sim_specs, parameters=None, workerID=0):
 
     Output = np.zeros(1, dtype=sim_specs["out"])
 
-    grads, params = run_cnn(parameters, sim_id)  # initial
+    grads, params = run_cnn(parameters, workerID)
     Output["grads"] = [i.cpu().detach().numpy() for i in grads]
     Output["output_parameters"] = [i.cpu().detach().numpy() for i in params]
     generator.send(Output)
@@ -26,7 +26,7 @@ def mnist_training_sim(H, _, sim_specs, info):
 
     generator = ToGenerator(info, EVAL_SIM_TAG)
 
-    _run_cnn_send(generator, sim_specs)
+    _run_cnn_send(generator, sim_specs, None, info["workerID"])
 
     while True:
         tag, Work, calc_in = generator.recv()

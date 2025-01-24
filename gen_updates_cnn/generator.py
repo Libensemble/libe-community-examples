@@ -11,7 +11,7 @@ import torch.optim as optim
 
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
-def _create_new_parameters(grads, params):
+def _create_new_parameters(N, grads, params):
     optimizer = optim.Adadelta(params, lr=1.0)
     optimizer.zero_grad()
     for i, param in enumerate(params):
@@ -20,22 +20,21 @@ def _create_new_parameters(grads, params):
     optimizer.step()
     return params
 
-
 @persistent_input_fields(["grads", "output_parameters"])
 @output_data([("input_parameters", object, (8,))])
 def optimize_cnn(H, _, gen_specs, libE_info):
 
-    ps = PersistentSupport(libE_info, EVAL_GEN_TAG)
+    Simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
     initial_complete = False
-    tag = None
+    N = gen_specs["user"]["num_networks"]
 
     while True:
-        History = np.zeros(1, dtype=gen_specs["out"])
+        NewParameters = np.zeros(N, dtype=gen_specs["out"])
         if not initial_complete:
-            History["input_parameters"] = 0  # will be disregarded by first persis sim anyway
+            NewParameters["input_parameters"] = 0  # will be disregarded by first persis sim anyway
             initial_complete = True
         else:
-            tag, Work, calc_in = ps.recv()
+            tag, Work, calc_in = Simulators.recv()
             if tag in [PERSIS_STOP, STOP_TAG]:
                 break
 
@@ -43,8 +42,8 @@ def optimize_cnn(H, _, gen_specs, libE_info):
             params = calc_in["output_parameters"][0]
             params = [torch.from_numpy(i) for i in params]
             grads = [torch.from_numpy(i) for i in grads]
-            History["input_parameters"] = _create_new_parameters(grads, params)
+            NewParameters["input_parameters"] = _create_new_parameters(N, grads, params)
 
-        ps.send(History)
+        Simulators.send(History)
         
     return [], {}, FINISHED_PERSISTENT_GEN_TAG

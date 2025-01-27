@@ -10,3 +10,8 @@ dist.all_reduce(param.grad, op=dist.ReduceOp.SUM)
 **pytorch_cnn_NCCL_with_DDP.py**
 Implicit parallelism.
 
+**simf_cnn_NCCL_parallel.py**
+Attempt to integrate into a libEnsemble sim_f.
+
+Needed for libEnsemble:
+An alloc thats starts by calling sim, and fills in H from sim.

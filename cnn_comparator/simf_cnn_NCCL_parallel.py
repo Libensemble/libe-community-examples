@@ -80,9 +80,10 @@ def train(rank, group_size, epochs, batch_size, use_gpu):
                     grad_shape = param.grad.shape
                     grad_size = param.grad.numel()
 
+                    # SH - speculatively called "grads_in"
                     # Extract the corresponding section and reshape
                     param.grad.data.copy_(
-                        torch.tensor(calc_in[offset:offset + grad_size].reshape(grad_shape),
+                        torch.tensor(calc_in["grads_in"][offset:offset + grad_size].reshape(grad_shape),
                                     device=param.grad.device)
                     )
                     offset += grad_size

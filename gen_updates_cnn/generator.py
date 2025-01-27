@@ -44,6 +44,6 @@ def optimize_cnn(H, _, gen_specs, libE_info):
             grads = [torch.from_numpy(i) for i in grads]
             NewParameters["input_parameters"] = _create_new_parameters(N, grads, params)
 
-        Simulators.send(History)
+        Simulators.send(NewParameters)
         
     return [], {}, FINISHED_PERSISTENT_GEN_TAG

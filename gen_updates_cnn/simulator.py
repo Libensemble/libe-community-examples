@@ -35,4 +35,4 @@ def mnist_training_sim(H, _, sim_specs, info):
 
         _run_cnn_send(generator, sim_specs, calc_in["input_parameters"], calc_in["sim_id"])
 
-    return [], {}, 0
+    return None, {}, 0

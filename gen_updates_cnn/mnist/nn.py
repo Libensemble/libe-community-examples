@@ -43,11 +43,11 @@ class Net(nn.Module):
         self.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
-            # optimizer.zero_grad()  # DONT NEED
+            optimizer.zero_grad()
             output = self(data)
             loss = F.nll_loss(output, target)
             self.total_train_loss += loss
-            # optimizer.step()  # OCCUR IN GEN
+            optimizer.step()
             if batch_idx % args.log_interval == 0:
                 print(
                     "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
@@ -198,13 +198,13 @@ def main(parameters=None, sim_seed=None):
         model = Net().to(device)
     else:
         model = Net(parameters).to(device)
-    # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
+    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
-    # scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)  # WILL GO TO GEN?
+    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         grads = model.train_model(args, device, train_loader, None, epoch)
         model.test_model(device, test_loader)
-        # scheduler.step()  # WILL GO TO GEN?
+        scheduler.step()
 
     if args.save_model:
         torch.save(model.state_dict(), "mnist_cnn.pt")

@@ -11,17 +11,19 @@ import torch.optim as optim
 
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
-def _create_new_parameters(N, grads, params):
-    optimizer = optim.Adadelta(params, lr=1.0)
-    optimizer.zero_grad()
-    for i, param in enumerate(params):
-        param.grad = grads[i].clone().detach()
-    # DONT STEP OPTIMIZER MULTIPLE TIMES WITH SAME GRADIENTS
-    optimizer.step()
-    return params
+def _create_new_parameters(N, grads):
+    pass
+    # GOING TO SUM ALL LOCAL GRADIENTS HERE.
+    # optimizer = optim.Adadelta(params, lr=1.0)
+    # optimizer.zero_grad()
+    # for i, param in enumerate(params):
+    #     param.grad = grads[i].clone().detach()
+    # # DONT STEP OPTIMIZER MULTIPLE TIMES WITH SAME GRADIENTS
+    # optimizer.step()
+    # return params
 
-@persistent_input_fields(["grads", "output_parameters"])
-@output_data([("input_parameters", object, (8,))])
+@persistent_input_fields(["local_gradients"])
+@output_data([("summed_gradients", object, (8,))])
 def optimize_cnn(H, _, gen_specs, libE_info):
 
     Simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
@@ -29,21 +31,19 @@ def optimize_cnn(H, _, gen_specs, libE_info):
     N = gen_specs["user"]["num_networks"]
 
     while True:
-        NewParameters = np.zeros(N, dtype=gen_specs["out"])
+        SummedGrads = np.zeros(N, dtype=gen_specs["out"])
         if not initial_complete:
-            NewParameters["input_parameters"] = 0  # will be disregarded by first persis sim anyway
+            SummedGrads["summed_gradients"] = 0  # will be disregarded by first persis sim anyway
             initial_complete = True
         else:
             tag, Work, calc_in = Simulators.recv()
             if tag in [PERSIS_STOP, STOP_TAG]:
                 break
 
-            grads = calc_in["grads"][0]
-            params = calc_in["output_parameters"][0]
-            params = [torch.from_numpy(i) for i in params]
+            grads = calc_in["local_gradients"][0]
             grads = [torch.from_numpy(i) for i in grads]
-            NewParameters["input_parameters"] = _create_new_parameters(N, grads, params)
+            SummedGrads["summed_gradients"] = _create_new_parameters(N, grads)
 
-        Simulators.send(NewParameters)
+        Simulators.send(SummedGrads)
         
     return [], {}, FINISHED_PERSISTENT_GEN_TAG

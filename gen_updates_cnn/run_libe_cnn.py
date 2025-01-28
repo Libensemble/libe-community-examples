@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)
     gen_specs = GenSpecs(gen_f=optimize_cnn, user=user)
-    alloc_specs = AllocSpecs(alloc_f=only_persistent_gens, user={"alt_type": True})
+    alloc_specs = AllocSpecs(alloc_f=only_persistent_gens)
 
     ensemble.sim_specs = sim_specs
     ensemble.gen_specs = gen_specs

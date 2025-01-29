@@ -9,7 +9,34 @@ from libensemble.tools.persistent_support import PersistentSupport
 import torch
 import torch.optim as optim
 
+from proxystore.connectors.redis import RedisConnector
+from proxystore.store import Store, get_store
+from proxystore.proxy import Proxy, is_resolved
+
+from .mnist.nn import Net
+
+# grads = GET GRADIENTS and/or WEIGHTS
+# proxy = store.proxy(grads)
+
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
+
+def _connect_to_store():
+    store = Store(
+        "my-store",
+        RedisConnector(hostname="localhost", port=6379),
+        register=True,
+    )
+
+    return get_store("my-store")
+
+def _get_device():
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    return device
 
 def optimize_net(params, grads):
     # GOING TO SUM ALL LOCAL GRADIENTS HERE.
@@ -21,28 +48,40 @@ def optimize_net(params, grads):
     optimizer.step()
     return params
 
-@persistent_input_fields(["local_gradients"])
-@output_data([("summed_gradients", object, (8,))])
-def sum_all_grads(H, _, gen_specs, libE_info):
+def _proxify_parameters(store, model):
+    return [store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()]
 
-    Simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
+def _sum_all_gradients(N, grads):
+    return [torch.sum(grads[i]) for i in range(N)]
+
+@persistent_input_fields(["local_gradients"])
+@output_data([("summed_gradients", object, (8,)), ("initial_parameters", object, (8,))])
+def network_sync(H, _, gen_specs, libE_info):
+        
+    store = _connect_to_store()
+    device = _get_device()
+
+    simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
     initial_complete = False
     N = gen_specs["user"]["num_networks"]
+    
+    model = Net().to(device)
 
     while True:
-        SummedGrads = np.zeros(N, dtype=gen_specs["out"])
+        output = np.zeros(N, dtype=gen_specs["out"])
         if not initial_complete:
-            SummedGrads["summed_gradients"] = 0  # will be disregarded by first persis sim anyway
+            output_parameters = _proxify_parameters(store, model)
+            output["initial_parameters"][:N] = output_parameters * N
             initial_complete = True
         else:
-            tag, Work, calc_in = Simulators.recv()
+            tag, Work, calc_in = simulators.recv()
             if tag in [PERSIS_STOP, STOP_TAG]:
                 break
 
             grads = calc_in["local_gradients"][0]
             grads = [torch.from_numpy(i) for i in grads]
-            SummedGrads["summed_gradients"] = _sum_all_gradients(N, grads)
+            output["summed_gradients"] = _sum_all_gradients(N, grads)
 
-        Simulators.send(SummedGrads)
+        simulators.send(output)
         
     return [], {}, FINISHED_PERSISTENT_GEN_TAG

@@ -18,8 +18,8 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(9216, 128)
         self.fc2 = nn.Linear(128, 10)
         if parameters is not None:
-            for param, value in zip(self.parameters(), parameters[0]):
-                param.data = value
+            for param, value in zip(self.parameters(), parameters):
+                param.data = torch.tensor(value)
 
         self.total_train_loss = 0
 
@@ -202,7 +202,7 @@ def main(parameters=None, sim_seed=None):
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
-        grads = model.train_model(args, device, train_loader, None, epoch)
+        grads = model.train_model(args, device, train_loader, optimizer, epoch)
         model.test_model(device, test_loader)
         scheduler.step()
 
@@ -211,7 +211,7 @@ def main(parameters=None, sim_seed=None):
 
     print("MODEL'S TOTAL TRAINING LOSS: ", model.total_train_loss)
 
-    return grads, model.parameters()
+    return grads
 
 
 if __name__ == "__main__":

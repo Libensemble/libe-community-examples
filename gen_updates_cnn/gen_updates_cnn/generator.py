@@ -20,6 +20,21 @@ from .mnist.nn import Net
 
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
+def _train(self, device, train_loader, grads, optimizer, epochs, num_networks):
+    
+    for param, new_grad in zip(model.parameters(), grads):
+        param.grad = torch.tensor(new_grad) / num_networks
+    
+    for epoch in range(epochs):
+        for batch_idx, (data, target) in enumerate(train_loader):
+            data, target = data.to(device), target.to(device)
+
+            optimizer.zero_grad()
+            output = self(data)
+            loss = torch.nn.CrossEntropyLoss()(output, target)
+            loss.backward()
+            optimizer.step()
+
 def _connect_to_store():
     store = Store(
         "my-store",
@@ -38,24 +53,29 @@ def _get_device():
         device = torch.device("cpu")
     return device
 
-def optimize_net(params, grads):
-    # GOING TO SUM ALL LOCAL GRADIENTS HERE.
-    optimizer = optim.Adadelta(params, lr=1.0)
-    optimizer.zero_grad()
-    for i, param in enumerate(params):
-        param.grad = grads[i].clone().detach()
-    # DONT STEP OPTIMIZER MULTIPLE TIMES WITH SAME GRADIENTS
-    optimizer.step()
-    return params
-
 def _proxify_parameters(store, model):
     return [store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()]
 
-def _sum_all_gradients(N, grads):
-    return [torch.sum(grads[i]) for i in range(N)]
+def _get_train_loader():
+    from torchvision import datasets, transforms
+    train_kwargs = {"batch_size": args.batch_size}
+    transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+    )
+    dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
+    dataset2 = datasets.MNIST("../data", train=False, transform=transform)
+    train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
+    return train_loader
+
+def _get_optimizer(model):
+    optimizer = optim.Adadelta(model.parameters(), lr=0.1)
+    return optimizer
+
+def _get_summed_grads(grads):
+    pass
 
 @persistent_input_fields(["local_gradients"])
-@output_data([("summed_gradients", object, (8,)), ("initial_parameters", object, (8,))])
+@output_data([("parameters", object, (8,))])
 def network_sync(H, _, gen_specs, libE_info):
         
     store = _connect_to_store()
@@ -66,12 +86,15 @@ def network_sync(H, _, gen_specs, libE_info):
     N = gen_specs["user"]["num_networks"]
     
     model = Net().to(device)
+    model._train = _train
+    train_loader = _get_train_loader()
+    optimizer = _get_optimizer(model)
 
     while True:
         output = np.zeros(N, dtype=gen_specs["out"])
         if not initial_complete:
             output_parameters = _proxify_parameters(store, model)
-            output["initial_parameters"][:N] = output_parameters * N
+            output["parameters"][:N] = output_parameters * N
             initial_complete = True
         else:
             tag, Work, calc_in = simulators.recv()
@@ -80,7 +103,10 @@ def network_sync(H, _, gen_specs, libE_info):
 
             grads = calc_in["local_gradients"][0]
             grads = [torch.from_numpy(i) for i in grads]
-            output["summed_gradients"] = _sum_all_gradients(N, grads)
+            summed_grads = _get_summed_grads(grads)
+            model._train(device, train_loader, grads, optimizer, 3, N)
+            output_parameters = _proxify_parameters(store, model)
+            output["parameters"][:N] = output_parameters * N
 
         simulators.send(output)
         

@@ -7,6 +7,31 @@ from libensemble.tools.persistent_support import PersistentSupport as ToGenerato
 from mnist.nn import main as run_cnn
 
 
+def train_model(self, args, device, train_loader, optimizer, epoch):
+    self.train()
+    for batch_idx, (data, target) in enumerate(train_loader):
+        data, target = data.to(device), target.to(device)
+        optimizer.zero_grad()
+        output = self(data)
+        loss = F.nll_loss(output, target)
+        self.total_train_loss += loss
+        loss.backward()
+        # UPDATE GRADIENTS FROM GEN HERE
+        optimizer.step()
+        if batch_idx % args.log_interval == 0:
+            print(
+                "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                    epoch,
+                    batch_idx * len(data),
+                    len(train_loader.dataset),
+                    100.0 * batch_idx / len(train_loader),
+                    loss.item(),
+                )
+            )
+            if args.dry_run:
+                break
+
+
 def _run_cnn_send(generator, sim_specs, summed_gradients=None):
 
     Output = np.zeros(1, dtype=sim_specs["out"])

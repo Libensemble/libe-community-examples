@@ -11,20 +11,19 @@ import torch.optim as optim
 
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
-def _create_new_parameters(N, grads):
-    pass
+def optimize_net(params, grads):
     # GOING TO SUM ALL LOCAL GRADIENTS HERE.
-    # optimizer = optim.Adadelta(params, lr=1.0)
-    # optimizer.zero_grad()
-    # for i, param in enumerate(params):
-    #     param.grad = grads[i].clone().detach()
-    # # DONT STEP OPTIMIZER MULTIPLE TIMES WITH SAME GRADIENTS
-    # optimizer.step()
-    # return params
+    optimizer = optim.Adadelta(params, lr=1.0)
+    optimizer.zero_grad()
+    for i, param in enumerate(params):
+        param.grad = grads[i].clone().detach()
+    # DONT STEP OPTIMIZER MULTIPLE TIMES WITH SAME GRADIENTS
+    optimizer.step()
+    return params
 
 @persistent_input_fields(["local_gradients"])
 @output_data([("summed_gradients", object, (8,))])
-def optimize_cnn(H, _, gen_specs, libE_info):
+def sum_all_grads(H, _, gen_specs, libE_info):
 
     Simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
     initial_complete = False
@@ -42,7 +41,7 @@ def optimize_cnn(H, _, gen_specs, libE_info):
 
             grads = calc_in["local_gradients"][0]
             grads = [torch.from_numpy(i) for i in grads]
-            SummedGrads["summed_gradients"] = _create_new_parameters(N, grads)
+            SummedGrads["summed_gradients"] = _sum_all_gradients(N, grads)
 
         Simulators.send(SummedGrads)
         

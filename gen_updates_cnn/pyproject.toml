@@ -1,0 +1,29 @@
+[tool.pixi.project]
+name = "gen_updates_cnn"
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+gen_updates_cnn = { path = ".", editable = true }
+torch = ">=2.5.1, <3"
+torchvision = ">=0.20.1, <0.21"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pixi.tasks]
+clean = "rm -rf ensemble.log *.pickle *.npy libE_stats.txt"
+
+[tool.pixi.dependencies]
+python = "<=3.12"
+libensemble = ">=1.4.3,<2"
+mpi4py = ">=4.0.1,<5"
+
+[tool.pixi.environments]
+default = []
+dev = ["dev"]
+
+[tool.pixi.feature.dev.dependencies]
+ipdb = ">=0.13.13,<0.14"
+black = ">=24.10.0,<25"

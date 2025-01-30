@@ -15,25 +15,33 @@ from proxystore.proxy import Proxy, is_resolved
 
 from .mnist.nn import Net
 
-# grads = GET GRADIENTS and/or WEIGHTS
-# proxy = store.proxy(grads)
-
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
-def _train(self, device, train_loader, grads, optimizer, epochs, num_networks):
-    
+def _train(model, device, train_loader, grads, optimizer, epochs):
     for param, new_grad in zip(model.parameters(), grads):
-        param.grad = torch.tensor(new_grad) / num_networks
-    
+        new_grad = new_grad.to(device)
+        param.grad = new_grad
+
     for epoch in range(epochs):
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
 
             optimizer.zero_grad()
-            output = self(data)
+            output = model(data)
             loss = torch.nn.CrossEntropyLoss()(output, target)
             loss.backward()
             optimizer.step()
+
+            if batch_idx % 10 == 0:
+                print(
+                    "GENERATOR: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                        epoch,
+                        batch_idx * len(data),
+                        len(train_loader.dataset),
+                        100.0 * batch_idx / len(train_loader),
+                        loss.item(),
+                    )
+                )
 
 def _connect_to_store():
     store = Store(
@@ -58,7 +66,7 @@ def _proxify_parameters(store, model):
 
 def _get_train_loader():
     from torchvision import datasets, transforms
-    train_kwargs = {"batch_size": args.batch_size}
+    train_kwargs = {"batch_size": 64}
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
     )
@@ -72,21 +80,25 @@ def _get_optimizer(model):
     return optimizer
 
 def _get_summed_grads(grads):
-    pass
+    summed_grads = [torch.zeros_like(i) for i in grads[0]] # base tensors for summing grads onto
+    for grad in grads:
+        for i in range(len(summed_grads)):
+            summed_grads[i] += grad[i]
+    return summed_grads
 
 @persistent_input_fields(["local_gradients"])
 @output_data([("parameters", object, (8,))])
 def network_sync(H, _, gen_specs, libE_info):
-        
+
     store = _connect_to_store()
     device = _get_device()
 
     simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
     initial_complete = False
     N = gen_specs["user"]["num_networks"]
-    
+
     model = Net().to(device)
-    model._train = _train
+    model._train = _train  # to use same Net as from nn.py, but with optimizing training routine
     train_loader = _get_train_loader()
     optimizer = _get_optimizer(model)
 
@@ -101,12 +113,12 @@ def network_sync(H, _, gen_specs, libE_info):
             if tag in [PERSIS_STOP, STOP_TAG]:
                 break
 
-            grads = calc_in["local_gradients"][0]
-            grads = [torch.from_numpy(i) for i in grads]
+            grad_proxies = calc_in["local_gradients"] # list of lists of gradient proxies
+            grads = [[torch.from_numpy(np.array(i)) for i in j] for j in grad_proxies]
             summed_grads = _get_summed_grads(grads)
-            model._train(device, train_loader, grads, optimizer, 3, N)
+            _train(model, device, train_loader, summed_grads, optimizer, 3)
             output_parameters = _proxify_parameters(store, model)
-            output["parameters"][:N] = output_parameters * N
+            output["parameters"][:N] = output_parameters * N  # since parameters for each model are same
 
         simulators.send(output)
         

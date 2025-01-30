@@ -22,7 +22,7 @@ if __name__ == "__main__":
     ensemble.sim_specs = sim_specs
     ensemble.gen_specs = gen_specs
     ensemble.alloc_specs = alloc_specs
-    ensemble.exit_criteria = ExitCriteria(sim_max=8)
+    ensemble.exit_criteria = ExitCriteria(sim_max=4)
 
     ensemble.run()
     ensemble.save_output(__file__)

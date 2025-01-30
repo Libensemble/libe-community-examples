@@ -7,6 +7,7 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 import sys
 
+import numpy as np
 
 class Net(nn.Module):
     def __init__(self, parameters=None):
@@ -19,7 +20,7 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(128, 10)
         if parameters is not None:
             for param, value in zip(self.parameters(), parameters):
-                param.data = torch.tensor(value)
+                param.data = torch.from_numpy(np.array(value))
 
         self.total_train_loss = 0
 
@@ -39,18 +40,15 @@ class Net(nn.Module):
         output = F.log_softmax(x, dim=1)
         return output
 
-    def train_model(self, args, device, train_loader, optimizer, epoch):
+    def train_model(self, args, device, train_loader, epoch):
         self.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
-            optimizer.zero_grad()
             output = self(data)
             loss = F.nll_loss(output, target)
-            self.total_train_loss += loss
-            optimizer.step()
             if batch_idx % args.log_interval == 0:
                 print(
-                    "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                    "SIMULATOR: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
                         epoch,
                         batch_idx * len(data),
                         len(train_loader.dataset),
@@ -198,13 +196,10 @@ def main(parameters=None, sim_seed=None):
         model = Net().to(device)
     else:
         model = Net(parameters).to(device)
-    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
-    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
-        grads = model.train_model(args, device, train_loader, optimizer, epoch)
+        grads = model.train_model(args, device, train_loader, epoch)
         model.test_model(device, test_loader)
-        scheduler.step()
 
     if args.save_model:
         torch.save(model.state_dict(), "mnist_cnn.pt")

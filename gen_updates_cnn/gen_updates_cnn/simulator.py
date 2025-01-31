@@ -39,6 +39,6 @@ def mnist_training_sim(InitialData, _, sim_specs, info):
         if tag in [PERSIS_STOP, STOP_TAG]:
             break
 
-        _run_cnn_send(generator, sim_specs, store, SubsequentData["parameters"])
+        _run_cnn_send(generator, sim_specs, store, SubsequentData["parameters"][0])
 
     return None, {}, 0

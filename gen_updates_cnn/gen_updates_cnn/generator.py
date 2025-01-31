@@ -8,6 +8,7 @@ from libensemble.tools.persistent_support import PersistentSupport
 
 import torch
 import torch.optim as optim
+import torch.nn.functional as F
 
 from proxystore.connectors.redis import RedisConnector
 from proxystore.store import Store, get_store
@@ -22,13 +23,14 @@ def _train(model, device, train_loader, grads, optimizer, epochs):
         new_grad = new_grad.to(device)
         param.grad = new_grad
 
+    model.train()
     for epoch in range(epochs):
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
 
             optimizer.zero_grad()
             output = model(data)
-            loss = torch.nn.CrossEntropyLoss()(output, target)
+            loss = F.nll_loss(output, target)
             loss.backward()
             optimizer.step()
 
@@ -116,7 +118,7 @@ def network_sync(H, _, gen_specs, libE_info):
             grad_proxies = calc_in["local_gradients"] # list of lists of gradient proxies
             grads = [[torch.from_numpy(np.array(i)) for i in j] for j in grad_proxies]
             summed_grads = _get_summed_grads(grads)
-            _train(model, device, train_loader, summed_grads, optimizer, 3)
+            _train(model, device, train_loader, summed_grads, optimizer, 1)
             output_parameters = _proxify_parameters(store, model)
             output["parameters"][:N] = output_parameters * N  # since parameters for each model are same
 

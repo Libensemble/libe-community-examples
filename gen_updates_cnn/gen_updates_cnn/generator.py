@@ -24,7 +24,7 @@ def _train(model, device, train_loader, grads, optimizer, epochs):
         param.grad = new_grad
 
     model.train()
-    for epoch in range(epochs):
+    for epoch in range(1, epochs+1):
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
 
@@ -63,8 +63,8 @@ def _get_device():
         device = torch.device("cpu")
     return device
 
-def _proxify_parameters(store, model):
-    return [store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()]
+def _proxify_parameters(store, model, N):
+    return [[store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()] for _ in range(N)]
 
 def _get_train_loader():
     from torchvision import datasets, transforms
@@ -107,8 +107,8 @@ def network_sync(H, _, gen_specs, libE_info):
     while True:
         output = np.zeros(N, dtype=gen_specs["out"])
         if not initial_complete:
-            output_parameters = _proxify_parameters(store, model)
-            output["parameters"][:N] = output_parameters * N
+            output_parameters = _proxify_parameters(store, model, N)
+            output["parameters"][:N] = output_parameters
             initial_complete = True
         else:
             tag, Work, calc_in = simulators.recv()
@@ -119,8 +119,8 @@ def network_sync(H, _, gen_specs, libE_info):
             grads = [[torch.from_numpy(np.array(i)) for i in j] for j in grad_proxies]
             summed_grads = _get_summed_grads(grads)
             _train(model, device, train_loader, summed_grads, optimizer, 1)
-            output_parameters = _proxify_parameters(store, model)
-            output["parameters"][:N] = output_parameters * N  # since parameters for each model are same
+            output_parameters = _proxify_parameters(store, model, N)
+            output["parameters"][:N] = output_parameters
 
         simulators.send(output)
         

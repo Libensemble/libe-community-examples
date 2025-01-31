@@ -4,11 +4,13 @@
 `python run_libe_cnn.py -n N`
 
 Starts N parallel CNN training instances on separate, distributed
-worker processes. The workers send their parameters to a manager process,
+worker processes. The workers send their gradients to a manager process,
 where optimization is performed on the combined data. Updated model
 weights are sent back to the workers.
 
 ## Setup
+
+### Dependencies
 
 If using pixi, `pixi shell`.
 
@@ -17,20 +19,26 @@ Otherwise, install:
 ```
 torch = ">=2.5.1, <3"
 torchvision = ">=0.20.1, <0.21"
+proxystore = ">=0.8.0, <0.9"
+redis = ">=5.2.1, <6"
 ```
+
+Then start a redis server instance to hold streaming data:
+
+`redis-server`
 
 ## Simulator
 
-Runs `minst/nn.py`'s model training code. Sends
-the training loss, model parameters, and last layer's gradient to
-the generator. Subsequent runs reinitialize the model using
-optimized weights from the generator.
+Runs model training code without optimization. Sends
+the last layer's gradient to the generator. Subsequent
+runs reinitialize the model using optimized parameters
+from the generator.
 
 ## Generator
 
-Receives training loss, model parameters, and gradient from each worker,
-sums each, performs optimization, and sends optimized model parameters back
-to each worker.
+Initializes a parent model. Receives gradients from each simulator,
+sums each, performs optimization using parent model, and sends
+updated model parameters to the simulators.
 
 ## mnist directory
 

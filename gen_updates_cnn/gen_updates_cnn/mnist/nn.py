@@ -40,7 +40,7 @@ class Net(nn.Module):
         output = F.log_softmax(x, dim=1)
         return output
 
-    def train_model(self, args, device, train_loader, epoch):
+    def train_model(self, args, device, train_loader, epoch, seed_worker_id):
         self.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
@@ -48,7 +48,8 @@ class Net(nn.Module):
             loss = F.nll_loss(output, target)
             if batch_idx % args.log_interval == 0:
                 print(
-                    "SIMULATOR: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                    "SIMULATOR {}: Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                        seed_worker_id,
                         epoch,
                         batch_idx * len(data),
                         len(train_loader.dataset),
@@ -93,7 +94,7 @@ class Net(nn.Module):
         )
 
 
-def main(parameters=None, sim_seed=None):
+def main(parameters=None, seed_worker_id=None):
     # Training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
     parser.add_argument(
@@ -165,8 +166,8 @@ def main(parameters=None, sim_seed=None):
     args = parser.parse_args([])  # avoid conflict with libensemble args
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     use_mps = not args.no_mps and torch.backends.mps.is_available()
-    
-    seed = sim_seed if sim_seed is not None else args.seed
+
+    seed = seed_worker_id if seed_worker_id is not None else args.seed
 
     torch.manual_seed(seed)
 
@@ -198,7 +199,7 @@ def main(parameters=None, sim_seed=None):
         model = Net(parameters).to(device)
 
     for epoch in range(1, args.epochs + 1):
-        grads = model.train_model(args, device, train_loader, epoch)
+        grads = model.train_model(args, device, train_loader, epoch, seed_worker_id)
         model.test_model(device, test_loader)
 
     if args.save_model:

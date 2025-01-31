@@ -12,11 +12,11 @@ def _proxify_gradients(store, grads):
     return [store.proxy(i.cpu().detach().numpy(), evict=True) for i in grads]
 
 
-def _run_cnn_send(generator, sim_specs, store, parameters):
+def _run_cnn_send(generator, sim_specs, store, parameters, workerID):
 
     Output = np.zeros(1, dtype=sim_specs["out"])
 
-    grads = run_cnn(parameters)
+    grads = run_cnn(parameters, workerID)
 
     Output["local_gradients"] = _proxify_gradients(store, grads)
     generator.send(Output)
@@ -29,16 +29,18 @@ def _run_cnn_send(generator, sim_specs, store, parameters):
 )
 def mnist_training_sim(InitialData, _, sim_specs, info):
 
+    workerID = info["workerID"]
+
     generator = ToGenerator(info, EVAL_SIM_TAG)
     store = _connect_to_store()
 
-    _run_cnn_send(generator, sim_specs, store, InitialData["parameters"][0])
+    _run_cnn_send(generator, sim_specs, store, InitialData["parameters"][0], workerID)
 
     while True:
         tag, _, SubsequentData = generator.recv()
         if tag in [PERSIS_STOP, STOP_TAG]:
             break
 
-        _run_cnn_send(generator, sim_specs, store, SubsequentData["parameters"][0])
+        _run_cnn_send(generator, sim_specs, store, SubsequentData["parameters"][0], workerID)
 
     return None, {}, 0

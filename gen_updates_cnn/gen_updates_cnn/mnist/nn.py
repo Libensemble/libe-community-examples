@@ -154,7 +154,7 @@ def main(parameters=None, seed_worker_id=None):
     parser.add_argument(
         "--log-interval",
         type=int,
-        default=10,
+        default=100,
         metavar="N",
         help="how many batches to wait before logging training status",
     )
@@ -205,8 +205,6 @@ def main(parameters=None, seed_worker_id=None):
 
     if args.save_model:
         torch.save(model.state_dict(), "mnist_cnn.pt")
-
-    print("MODEL'S TOTAL TRAINING LOSS: ", model.total_train_loss)
 
     return grads
 

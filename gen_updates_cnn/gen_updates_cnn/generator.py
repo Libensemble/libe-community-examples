@@ -2,7 +2,12 @@ import sys
 import numpy as np
 from itertools import chain
 
-from libensemble.message_numbers import PERSIS_STOP, STOP_TAG, EVAL_GEN_TAG, FINISHED_PERSISTENT_GEN_TAG
+from libensemble.message_numbers import (
+    PERSIS_STOP,
+    STOP_TAG,
+    EVAL_GEN_TAG,
+    FINISHED_PERSISTENT_GEN_TAG,
+)
 from libensemble.specs import output_data, persistent_input_fields
 from libensemble.tools.persistent_support import PersistentSupport
 
@@ -18,13 +23,14 @@ from .mnist.nn import Net
 
 # https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
+
 def _train(model, device, train_loader, grads, optimizer, epochs):
     for param, new_grad in zip(model.parameters(), grads):
         new_grad = new_grad.to(device)
         param.grad = new_grad
 
     model.train()
-    for epoch in range(1, epochs+1):
+    for epoch in range(1, epochs + 1):
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
 
@@ -45,6 +51,7 @@ def _train(model, device, train_loader, grads, optimizer, epochs):
                     )
                 )
 
+
 def _connect_to_store():
     store = Store(
         "my-store",
@@ -53,6 +60,7 @@ def _connect_to_store():
     )
 
     return get_store("my-store")
+
 
 def _get_device():
     if torch.cuda.is_available():
@@ -63,11 +71,17 @@ def _get_device():
         device = torch.device("cpu")
     return device
 
+
 def _proxify_parameters(store, model, N):
-    return [[store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()] for _ in range(N)]
+    return [
+        [store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()]
+        for _ in range(N)
+    ]
+
 
 def _get_train_loader():
     from torchvision import datasets, transforms
+
     train_kwargs = {"batch_size": 64}
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
@@ -77,16 +91,21 @@ def _get_train_loader():
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     return train_loader
 
+
 def _get_optimizer(model):
     optimizer = optim.Adadelta(model.parameters(), lr=0.1)
     return optimizer
 
+
 def _get_summed_grads(grads):
-    summed_grads = [torch.zeros_like(i) for i in grads[0]] # base tensors for summing grads onto
+    summed_grads = [
+        torch.zeros_like(i) for i in grads[0]
+    ]  # base tensors for summing grads onto
     for grad in grads:
         for i in range(len(summed_grads)):
             summed_grads[i] += grad[i]
     return summed_grads
+
 
 @persistent_input_fields(["local_gradients"])
 @output_data([("parameters", object, (8,))])
@@ -100,7 +119,9 @@ def network_sync(H, _, gen_specs, libE_info):
     N = gen_specs["user"]["num_networks"]
 
     model = Net().to(device)
-    model._train = _train  # to use same Net as from nn.py, but with optimizing training routine
+    model._train = (
+        _train  # to use same Net as from nn.py, but with optimizing training routine
+    )
     train_loader = _get_train_loader()
     optimizer = _get_optimizer(model)
 
@@ -115,7 +136,9 @@ def network_sync(H, _, gen_specs, libE_info):
             if tag in [PERSIS_STOP, STOP_TAG]:
                 break
 
-            grad_proxies = calc_in["local_gradients"] # list of lists of gradient proxies
+            grad_proxies = calc_in[
+                "local_gradients"
+            ]  # list of lists of gradient proxies
             grads = [[torch.from_numpy(np.array(i)) for i in j] for j in grad_proxies]
             summed_grads = _get_summed_grads(grads)
             _train(model, device, train_loader, summed_grads, optimizer, 1)
@@ -123,5 +146,5 @@ def network_sync(H, _, gen_specs, libE_info):
             output["parameters"][:N] = output_parameters
 
         simulators.send(output)
-        
+
     return [], {}, FINISHED_PERSISTENT_GEN_TAG

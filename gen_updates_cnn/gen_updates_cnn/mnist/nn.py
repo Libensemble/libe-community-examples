@@ -9,6 +9,7 @@ import sys
 
 import numpy as np
 
+
 class Net(nn.Module):
     def __init__(self, parameters=None):
         super(Net, self).__init__()

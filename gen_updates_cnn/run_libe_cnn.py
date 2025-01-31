@@ -12,7 +12,7 @@ if __name__ == "__main__":
     ensemble = Ensemble(parse_args=True)
 
     ensemble.libE_specs.gen_on_manager = True
-    
+
     user = {"num_networks": ensemble.nworkers}
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)

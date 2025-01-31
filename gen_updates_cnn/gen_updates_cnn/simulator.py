@@ -24,9 +24,7 @@ def _run_cnn_send(generator, sim_specs, store, parameters, workerID):
 
 @input_fields(["parameters"])
 @persistent_input_fields(["parameters"])
-@output_data(
-    [("local_gradients", object, (8,))]
-)
+@output_data([("local_gradients", object, (8,))])
 def mnist_training_sim(InitialData, _, sim_specs, info):
 
     workerID = info["workerID"]
@@ -41,6 +39,8 @@ def mnist_training_sim(InitialData, _, sim_specs, info):
         if tag in [PERSIS_STOP, STOP_TAG]:
             break
 
-        _run_cnn_send(generator, sim_specs, store, SubsequentData["parameters"][0], workerID)
+        _run_cnn_send(
+            generator, sim_specs, store, SubsequentData["parameters"][0], workerID
+        )
 
     return None, {}, 0

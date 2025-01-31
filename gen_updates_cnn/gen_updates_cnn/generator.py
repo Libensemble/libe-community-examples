@@ -25,6 +25,7 @@ from .mnist.nn import Net
 
 
 def _train(model, device, train_loader, grads, optimizer, epochs):
+    """ Assign summed gradients from simulators to parent model. Trains parent model. """
     for param, new_grad in zip(model.parameters(), grads):
         new_grad = new_grad.to(device)
         param.grad = new_grad
@@ -53,6 +54,7 @@ def _train(model, device, train_loader, grads, optimizer, epochs):
 
 
 def _connect_to_store():
+    """ Connect to proxystore redis server"""
     store = Store(
         "my-store",
         RedisConnector(hostname="localhost", port=6379),
@@ -63,6 +65,7 @@ def _connect_to_store():
 
 
 def _get_device():
+    """ Get device to train on """
     if torch.cuda.is_available():
         device = torch.device("cuda")
     elif torch.backends.mps.is_available():
@@ -73,6 +76,10 @@ def _get_device():
 
 
 def _proxify_parameters(store, model, N):
+    """
+    Convert parent model parameters to proxies for N target networks.
+    Data is evicted from proxystore after consumption by simulators.
+    """
     return [
         [store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()]
         for _ in range(N)
@@ -80,6 +87,7 @@ def _proxify_parameters(store, model, N):
 
 
 def _get_train_loader():
+    """ Prepare dataset for parent model training """
     from torchvision import datasets, transforms
 
     train_kwargs = {"batch_size": 64}
@@ -93,11 +101,12 @@ def _get_train_loader():
 
 
 def _get_optimizer(model):
-    optimizer = optim.Adadelta(model.parameters(), lr=0.1)
-    return optimizer
+    """ Prepare optimizer for parent model training """
+    return optim.Adadelta(model.parameters(), lr=0.1)
 
 
 def _get_summed_grads(grads):
+    """ Sum gradients from simulators """
     summed_grads = [
         torch.zeros_like(i) for i in grads[0]
     ]  # base tensors for summing grads onto
@@ -109,7 +118,11 @@ def _get_summed_grads(grads):
 
 @persistent_input_fields(["local_gradients"])
 @output_data([("parameters", object, (8,))])
-def network_sync(H, _, gen_specs, libE_info):
+def parent_model_trainer(H, _, gen_specs, libE_info):
+    """
+    Maintain a parent CNN that is trained using summed gradients from the
+    simulators. Optimized parameters are streamed back to the simulators.
+    """
 
     store = _connect_to_store()
     device = _get_device()

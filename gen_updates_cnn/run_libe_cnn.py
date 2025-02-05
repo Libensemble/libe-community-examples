@@ -8,12 +8,11 @@ from gen_updates_cnn.generator import parent_model_trainer
 
 if __name__ == "__main__":
 
-    # Create the ensemble
     ensemble = Ensemble(parse_args=True)
 
     ensemble.libE_specs.gen_on_manager = True
 
-    user = {"num_networks": ensemble.nworkers}
+    user = {"num_networks": ensemble.nworkers, "dataset_size": 1000}
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)
     gen_specs = GenSpecs(gen_f=parent_model_trainer, user=user)

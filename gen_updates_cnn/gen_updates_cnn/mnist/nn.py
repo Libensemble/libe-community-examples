@@ -94,7 +94,7 @@ class Net(nn.Module):
         )
 
 
-def main(parameters=None, seed_worker_id=None):
+def main(parameters=None, seed_worker_id=None, dataset_size=None):
     # Training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
     parser.add_argument(
@@ -190,11 +190,14 @@ def main(parameters=None, seed_worker_id=None):
     )
     dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
     dataset2 = datasets.MNIST("../data", train=False, transform=transform)
-    
+
     rand1 = torch.Generator().manual_seed(random.randint(1, 100))
     rand2 = torch.Generator().manual_seed(random.randint(1, 100))
-    dataset1 = torch.utils.data.Subset(dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:1000])
-    dataset2 = torch.utils.data.Subset(dataset2, indices=torch.randperm(len(dataset2), generator=rand2)[:1000])
+
+    size = dataset_size if dataset_size is not None else len(dataset1)
+
+    dataset1 = torch.utils.data.Subset(dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:size])
+    dataset2 = torch.utils.data.Subset(dataset2, indices=torch.randperm(len(dataset2), generator=rand2)[:size])
 
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)

@@ -86,7 +86,7 @@ def _proxify_parameters(store, model, N):
     ]
 
 
-def _get_train_loader():
+def _get_train_loader(dataset_size):
     """ Prepare dataset for parent model training """
     from torchvision import datasets, transforms
 
@@ -96,7 +96,7 @@ def _get_train_loader():
     )
     dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
     rand1 = torch.Generator().manual_seed(random.randint(1, 100))
-    dataset1 = torch.utils.data.Subset(dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:1000])
+    dataset1 = torch.utils.data.Subset(dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:dataset_size])
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     return train_loader
 
@@ -131,12 +131,13 @@ def parent_model_trainer(H, _, gen_specs, libE_info):
     simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
     initial_complete = False
     N = gen_specs["user"]["num_networks"]
+    dataset_size = gen_specs["user"]["dataset_size"]
 
     model = Net().to(device)
     model._train = (
         _train  # to use same Net as from nn.py, but with optimizing training routine
     )
-    train_loader = _get_train_loader()
+    train_loader = _get_train_loader(dataset_size)
     optimizer = _get_optimizer(model)
 
     while True:

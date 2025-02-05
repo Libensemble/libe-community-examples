@@ -18,7 +18,7 @@ def _run_cnn_send(generator, sim_specs, store, parameters, workerID):
 
     Output = np.zeros(1, dtype=sim_specs["out"])
 
-    grads = run_cnn(parameters, workerID)
+    grads = run_cnn(parameters, workerID, sim_specs["user"]["dataset_size"])
 
     Output["local_gradients"] = _proxify_gradients(store, grads)
     generator.send(Output)

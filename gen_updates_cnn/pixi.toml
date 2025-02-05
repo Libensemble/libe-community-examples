@@ -10,7 +10,7 @@ proxystore = ">=0.8.0, <0.9"
 redis = ">=5.2.1, <6"
 
 [tasks]
-clean = "rm -rf ensemble.log *.pickle *.npy libE_stats.txt"
+clean = "rm -rf ensemble.log *.pickle *.npy libE_stats.txt *.rdb"
 
 [dependencies]
 python = "<=3.12"

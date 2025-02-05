@@ -1,4 +1,5 @@
 import argparse
+import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -11,7 +12,7 @@ import numpy as np
 
 
 class Net(nn.Module):
-    def __init__(self, parameters=None):
+    def __init__(self, input_parameters=None):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
@@ -19,8 +20,8 @@ class Net(nn.Module):
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(9216, 128)
         self.fc2 = nn.Linear(128, 10)
-        if parameters is not None:
-            for param, value in zip(self.parameters(), parameters):
+        if input_parameters is not None:
+            for param, value in zip(self.parameters(), input_parameters):
                 param.data = torch.from_numpy(np.array(value))
 
         self.total_train_loss = 0
@@ -60,10 +61,8 @@ class Net(nn.Module):
                 )
                 if args.dry_run:
                     break
-            if batch_idx == len(train_loader) - 1:
-                loss.backward(retain_graph=True)
-            else:
-                loss.backward()
+            loss.backward(retain_graph=True)  # only way to get gradients
+            break
         grads = torch.autograd.grad(loss, self.parameters(), retain_graph=True)
         return grads
 
@@ -86,7 +85,7 @@ class Net(nn.Module):
         test_loss /= len(test_loader.dataset)
 
         print(
-            "\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
+            "\nSIMULATOR Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
                 test_loss,
                 correct,
                 len(test_loader.dataset),
@@ -101,14 +100,14 @@ def main(parameters=None, seed_worker_id=None):
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=64,
+        default=16,
         metavar="N",
         help="input batch size for training (default: 64)",
     )
     parser.add_argument(
         "--test-batch-size",
         type=int,
-        default=1000,
+        default=250,
         metavar="N",
         help="input batch size for testing (default: 1000)",
     )
@@ -179,8 +178,8 @@ def main(parameters=None, seed_worker_id=None):
     else:
         device = torch.device("cpu")
 
-    train_kwargs = {"batch_size": args.batch_size}
-    test_kwargs = {"batch_size": args.test_batch_size}
+    train_kwargs = {"batch_size": args.batch_size, "shuffle": True}
+    test_kwargs = {"batch_size": args.test_batch_size, "shuffle": True}
     if use_cuda:
         cuda_kwargs = {"num_workers": 1, "pin_memory": True, "shuffle": True}
         train_kwargs.update(cuda_kwargs)
@@ -191,6 +190,12 @@ def main(parameters=None, seed_worker_id=None):
     )
     dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
     dataset2 = datasets.MNIST("../data", train=False, transform=transform)
+    
+    rand1 = torch.Generator().manual_seed(random.randint(1, 100))
+    rand2 = torch.Generator().manual_seed(random.randint(1, 100))
+    dataset1 = torch.utils.data.Subset(dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:1000])
+    dataset2 = torch.utils.data.Subset(dataset2, indices=torch.randperm(len(dataset2), generator=rand2)[:1000])
+
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 

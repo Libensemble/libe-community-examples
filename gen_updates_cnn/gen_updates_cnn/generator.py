@@ -1,3 +1,4 @@
+import random
 import sys
 import numpy as np
 from itertools import chain
@@ -31,26 +32,25 @@ def _train(model, device, train_loader, grads, optimizer, epochs):
         param.grad = new_grad
 
     model.train()
-    for epoch in range(1, epochs + 1):
-        for batch_idx, (data, target) in enumerate(train_loader):
-            data, target = data.to(device), target.to(device)
+    for batch_idx, (data, target) in enumerate(train_loader):
+        data, target = data.to(device), target.to(device)
 
-            optimizer.zero_grad()
-            output = model(data)
-            loss = F.nll_loss(output, target)
-            loss.backward()
-            optimizer.step()
+        output = model(data)
+        loss = F.nll_loss(output, target)
+        loss.backward()
+        optimizer.step()
 
-            if batch_idx % 100 == 0:
-                print(
-                    "GENERATOR: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                        epoch,
-                        batch_idx * len(data),
-                        len(train_loader.dataset),
-                        100.0 * batch_idx / len(train_loader),
-                        loss.item(),
-                    )
+        if batch_idx % 100 == 0:
+            print(
+                "GENERATOR: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                    1,
+                    batch_idx * len(data),
+                    len(train_loader.dataset),
+                    100.0 * batch_idx / len(train_loader),
+                    loss.item(),
                 )
+            )
+        break  # only train once
 
 
 def _connect_to_store():
@@ -90,12 +90,13 @@ def _get_train_loader():
     """ Prepare dataset for parent model training """
     from torchvision import datasets, transforms
 
-    train_kwargs = {"batch_size": 64}
+    train_kwargs = {"batch_size": 64, "shuffle": True}
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
     )
     dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
-    dataset2 = datasets.MNIST("../data", train=False, transform=transform)
+    rand1 = torch.Generator().manual_seed(random.randint(1, 100))
+    dataset1 = torch.utils.data.Subset(dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:1000])
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     return train_loader
 

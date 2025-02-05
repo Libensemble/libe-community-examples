@@ -23,7 +23,6 @@ def _run_cnn_send(generator, sim_specs, store, parameters, workerID):
     Output["local_gradients"] = _proxify_gradients(store, grads)
     generator.send(Output)
 
-
 @input_fields(["parameters"])
 @persistent_input_fields(["parameters"])
 @output_data([("local_gradients", object, (8,))])

@@ -22,35 +22,15 @@ from proxystore.proxy import Proxy, is_resolved
 
 from .mnist.nn import Net
 
-# https://stackoverflow.com/questions/75012448/optimizer-step-not-updating-model-weights-parameters
 
-
-def _train(model, device, train_loader, grads, optimizer, epochs):
+def _optimize(model, device, grads, optimizer):
     """Assign summed gradients from simulators to parent model. Trains parent model."""
     for param, new_grad in zip(model.parameters(), grads):
         new_grad = new_grad.to(device)
         param.grad = new_grad
 
     model.train()
-    for batch_idx, (data, target) in enumerate(train_loader):
-        data, target = data.to(device), target.to(device)
-
-        output = model(data)
-        loss = F.nll_loss(output, target)
-        loss.backward()
-        optimizer.step()
-
-        if batch_idx % 100 == 0:
-            print(
-                "GENERATOR: Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                    1,
-                    batch_idx * len(data),
-                    len(train_loader.dataset),
-                    100.0 * batch_idx / len(train_loader),
-                    loss.item(),
-                )
-            )
-        break  # only train once
+    optimizer.step()
 
 
 def _connect_to_store():
@@ -86,26 +66,6 @@ def _proxify_parameters(store, model, N):
     ]
 
 
-def _get_train_loader(N):
-    """Prepare dataset for parent model training"""
-    from torchvision import datasets, transforms
-
-    train_kwargs = {"batch_size": 64, "shuffle": True}
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-    )
-    dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
-    rand1 = torch.Generator().manual_seed(random.randint(1, 100))
-
-    size = len(dataset1) / N
-
-    dataset1 = torch.utils.data.Subset(
-        dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:size]
-    )
-    train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
-    return train_loader
-
-
 def _get_optimizer(model):
     """Prepare optimizer for parent model training"""
     return optim.Adadelta(model.parameters(), lr=0.1)
@@ -113,9 +73,7 @@ def _get_optimizer(model):
 
 def _get_summed_grads(grads):
     """Sum gradients from simulators"""
-    summed_grads = [
-        torch.zeros_like(i) for i in grads[0]
-    ]  # base tensors for summing grads onto
+    summed_grads = [torch.zeros_like(i) for i in grads[0]]
     for grad in grads:
         for i in range(len(summed_grads)):
             summed_grads[i] += grad[i]
@@ -138,10 +96,7 @@ def parent_model_trainer(H, _, gen_specs, libE_info):
     N = gen_specs["user"]["num_networks"]
 
     model = Net().to(device)
-    model._train = (
-        _train  # to use same Net as from nn.py, but with optimizing training routine
-    )
-    train_loader = _get_train_loader(N)
+    model.optimize = _optimize
     optimizer = _get_optimizer(model)
 
     while True:
@@ -155,12 +110,10 @@ def parent_model_trainer(H, _, gen_specs, libE_info):
             if tag in [PERSIS_STOP, STOP_TAG]:
                 break
 
-            grad_proxies = calc_in[
-                "local_gradients"
-            ]  # list of lists of gradient proxies
+            grad_proxies = calc_in["local_gradients"]
             grads = [[torch.from_numpy(np.array(i)) for i in j] for j in grad_proxies]
             summed_grads = _get_summed_grads(grads)
-            _train(model, device, train_loader, summed_grads, optimizer, 1)
+            _optimize(model, device, summed_grads, optimizer)
             output_parameters = _proxify_parameters(store, model, N)
             output["parameters"][:N] = output_parameters
 

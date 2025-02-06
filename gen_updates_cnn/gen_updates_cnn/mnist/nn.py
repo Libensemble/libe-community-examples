@@ -42,7 +42,7 @@ class Net(nn.Module):
         output = F.log_softmax(x, dim=1)
         return output
 
-    def train_model(self, args, device, train_loader, epoch, seed_worker_id):
+    def train_model(self, args, device, train_loader, epoch, worker_id):
         self.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
@@ -51,7 +51,7 @@ class Net(nn.Module):
             if batch_idx % args.log_interval == 0:
                 print(
                     "SIMULATOR {}: Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                        seed_worker_id,
+                        worker_id,
                         epoch,
                         batch_idx * len(data),
                         len(train_loader.dataset),
@@ -61,8 +61,16 @@ class Net(nn.Module):
                 )
                 if args.dry_run:
                     break
-            loss.backward(retain_graph=True)  # only way to get gradients
-            break
+            loss.backward(retain_graph=True)
+            
+            # send:recv
+            
+            # if input_parameters is not None:
+            #     for param, value in zip(self.parameters(), input_parameters):
+            #         param.data = torch.from_numpy(np.array(value))
+            
+            break  # we want new parameters from the gen after each batch
+            # update new parameters based on optimized parameters from gen
         grads = torch.autograd.grad(loss, self.parameters(), retain_graph=True)
         return grads
 
@@ -94,7 +102,7 @@ class Net(nn.Module):
         )
 
 
-def main(parameters=None, seed_worker_id=None, num_networks=None):
+def main(parameters=None, worker_id=None, num_networks=1):
     # Training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
     parser.add_argument(
@@ -167,7 +175,7 @@ def main(parameters=None, seed_worker_id=None, num_networks=None):
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     use_mps = not args.no_mps and torch.backends.mps.is_available()
 
-    seed = seed_worker_id if seed_worker_id is not None else args.seed
+    seed = worker_id if worker_id is not None else args.seed
 
     torch.manual_seed(seed)
 
@@ -181,7 +189,7 @@ def main(parameters=None, seed_worker_id=None, num_networks=None):
     train_kwargs = {"batch_size": args.batch_size, "shuffle": True}
     test_kwargs = {"batch_size": args.test_batch_size, "shuffle": True}
     if use_cuda:
-        cuda_kwargs = {"num_workers": 1, "pin_memory": True, "shuffle": True}
+        cuda_kwargs = {"num_workers": 1, "pin_memory": True}
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
@@ -191,17 +199,20 @@ def main(parameters=None, seed_worker_id=None, num_networks=None):
     dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
     dataset2 = datasets.MNIST("../data", train=False, transform=transform)
 
-    rand1 = torch.Generator().manual_seed(random.randint(1, 100))
-    rand2 = torch.Generator().manual_seed(random.randint(1, 100))
+    local_train_dataset_size = len(dataset1) // num_networks
+    local_test_dataset_size = len(dataset2) // num_networks
 
-    size = len(dataset1) / num_networks
+    if worker_id is not None:
+        start_index_mult = worker_id - 1
+        
+        start_index_train = start_index_mult * local_train_dataset_size
+        end_index_train = start_index_train + local_train_dataset_size
 
-    dataset1 = torch.utils.data.Subset(
-        dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:size]
-    )
-    dataset2 = torch.utils.data.Subset(
-        dataset2, indices=torch.randperm(len(dataset2), generator=rand2)[:size]
-    )
+        start_index_test = start_index_mult * local_test_dataset_size
+        end_index_test = start_index_test + local_test_dataset_size
+
+        dataset1 = torch.utils.data.Subset(dataset1, range(start_index_train, end_index_train))
+        dataset2 = torch.utils.data.Subset(dataset2, range(start_index_test, end_index_test))
 
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
@@ -212,7 +223,7 @@ def main(parameters=None, seed_worker_id=None, num_networks=None):
         model = Net(parameters).to(device)
 
     for epoch in range(1, args.epochs + 1):
-        grads = model.train_model(args, device, train_loader, epoch, seed_worker_id)
+        grads = model.train_model(args, device, train_loader, epoch, worker_id)
         model.test_model(device, test_loader)
 
     if args.save_model:

@@ -9,19 +9,20 @@ from .generator import _connect_to_store
 
 
 def _proxify_gradients(store, grads):
-    """ Convert resulting gradients to proxies for parent model. """
+    """Convert resulting gradients to proxies for parent model."""
     return [store.proxy(i.cpu().detach().numpy(), evict=True) for i in grads]
 
 
 def _run_cnn_send(generator, sim_specs, store, parameters, workerID):
-    """ Run CNN with new parameters, send gradients to parent model. """
+    """Run CNN with new parameters, send gradients to parent model."""
 
     Output = np.zeros(1, dtype=sim_specs["out"])
 
-    grads = run_cnn(parameters, workerID, sim_specs["user"]["dataset_size"])
+    grads = run_cnn(parameters, workerID, sim_specs["user"]["num_networks"])
 
     Output["local_gradients"] = _proxify_gradients(store, grads)
     generator.send(Output)
+
 
 @input_fields(["parameters"])
 @persistent_input_fields(["parameters"])

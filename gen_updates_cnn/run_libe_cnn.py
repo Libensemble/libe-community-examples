@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     ensemble.libE_specs.gen_on_manager = True
 
-    user = {"num_networks": ensemble.nworkers, "dataset_size": 1000}
+    user = {"num_networks": ensemble.nworkers}
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)
     gen_specs = GenSpecs(gen_f=parent_model_trainer, user=user)

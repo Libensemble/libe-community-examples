@@ -26,7 +26,7 @@ from .mnist.nn import Net
 
 
 def _train(model, device, train_loader, grads, optimizer, epochs):
-    """ Assign summed gradients from simulators to parent model. Trains parent model. """
+    """Assign summed gradients from simulators to parent model. Trains parent model."""
     for param, new_grad in zip(model.parameters(), grads):
         new_grad = new_grad.to(device)
         param.grad = new_grad
@@ -54,7 +54,7 @@ def _train(model, device, train_loader, grads, optimizer, epochs):
 
 
 def _connect_to_store():
-    """ Connect to proxystore redis server"""
+    """Connect to proxystore redis server"""
     store = Store(
         "my-store",
         RedisConnector(hostname="localhost", port=6379),
@@ -65,7 +65,7 @@ def _connect_to_store():
 
 
 def _get_device():
-    """ Get device to train on """
+    """Get device to train on"""
     if torch.cuda.is_available():
         device = torch.device("cuda")
     elif torch.backends.mps.is_available():
@@ -86,8 +86,8 @@ def _proxify_parameters(store, model, N):
     ]
 
 
-def _get_train_loader(dataset_size):
-    """ Prepare dataset for parent model training """
+def _get_train_loader(N):
+    """Prepare dataset for parent model training"""
     from torchvision import datasets, transforms
 
     train_kwargs = {"batch_size": 64, "shuffle": True}
@@ -96,18 +96,23 @@ def _get_train_loader(dataset_size):
     )
     dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
     rand1 = torch.Generator().manual_seed(random.randint(1, 100))
-    dataset1 = torch.utils.data.Subset(dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:dataset_size])
+
+    size = len(dataset1) / N
+
+    dataset1 = torch.utils.data.Subset(
+        dataset1, indices=torch.randperm(len(dataset1), generator=rand1)[:size]
+    )
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     return train_loader
 
 
 def _get_optimizer(model):
-    """ Prepare optimizer for parent model training """
+    """Prepare optimizer for parent model training"""
     return optim.Adadelta(model.parameters(), lr=0.1)
 
 
 def _get_summed_grads(grads):
-    """ Sum gradients from simulators """
+    """Sum gradients from simulators"""
     summed_grads = [
         torch.zeros_like(i) for i in grads[0]
     ]  # base tensors for summing grads onto
@@ -131,13 +136,12 @@ def parent_model_trainer(H, _, gen_specs, libE_info):
     simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
     initial_complete = False
     N = gen_specs["user"]["num_networks"]
-    dataset_size = gen_specs["user"]["dataset_size"]
 
     model = Net().to(device)
     model._train = (
         _train  # to use same Net as from nn.py, but with optimizing training routine
     )
-    train_loader = _get_train_loader(dataset_size)
+    train_loader = _get_train_loader(N)
     optimizer = _get_optimizer(model)
 
     while True:

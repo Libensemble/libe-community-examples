@@ -99,7 +99,7 @@ class Net(nn.Module):
                 len(test_loader.dataset),
                 100.0 * correct / len(test_loader.dataset),
             )
-        )
+        , flush=True)
 
 
 def main(parameters=None, worker_id=None, num_networks=1):

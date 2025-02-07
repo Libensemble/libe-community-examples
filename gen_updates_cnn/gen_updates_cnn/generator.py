@@ -11,11 +11,6 @@ from libensemble.tools.persistent_support import PersistentSupport
 
 import torch
 import torch.optim as optim
-import torch.nn.functional as F
-
-from proxystore.connectors.redis import RedisConnector
-from proxystore.store import Store, get_store
-from proxystore.proxy import Proxy, is_resolved
 
 from .mnist.nn import Net
 from .utils import _connect_to_store, _get_device

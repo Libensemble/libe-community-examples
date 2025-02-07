@@ -4,9 +4,9 @@
 `python run_libe_cnn.py -n N`
 
 Starts N parallel CNN training instances on separate, distributed
-worker processes. The workers send their gradients to a manager process,
-where optimization is performed on the combined data. Updated model
-weights are sent back to the workers.
+worker processes. The workers send their gradients during training
+to a manager process, where optimization is performed on the combined
+data. Updated model weights are sent back to the workers.
 
 ## Setup
 
@@ -29,10 +29,9 @@ Then start a redis server instance to hold streaming data:
 
 ## Simulator
 
-Runs model training code without optimization. Sends
-the last layer's gradient to the generator. Subsequent
-runs reinitialize the model using optimized parameters
-from the generator.
+Runs model training code without optimization. Sends gradients across
+network to generator inside training loop. Parameters from generator
+are updated inside each training loop.
 
 ## Generator
 

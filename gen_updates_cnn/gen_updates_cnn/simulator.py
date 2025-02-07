@@ -1,5 +1,5 @@
 import numpy as np
-from libensemble.message_numbers import PERSIS_STOP, STOP_TAG, EVAL_SIM_TAG, WORKER_DONE
+from libensemble.message_numbers import PERSIS_STOP, STOP_TAG, EVAL_SIM_TAG, FINISHED_PERSISTENT_SIM_TAG
 from libensemble.specs import output_data, input_fields, persistent_input_fields
 from libensemble.tools.persistent_support import PersistentSupport as ToGenerator
 
@@ -26,21 +26,22 @@ def _update_parameters(model, device, params):
 @output_data([("local_gradients", object, (8,))])
 def mnist_training_sim(InitialData, _, sim_specs, info):
     """
-    Run CNN with parameters from parent model. Send gradients to parent model.
+    Maintain a child CNN that is trained using summed gradients from an optimized
+    parent model on the generator. Gradients are streamed to the generator, and
+    updated parameters are streamed back to the simulators.
     """
 
-    workerID = info["workerID"]
-    num_networks = sim_specs["user"]["num_networks"]
-
-    generator = ToGenerator(info, EVAL_SIM_TAG)
     store = _connect_to_store()
     device = _get_device()
 
-    train_loader, test_loader = _get_datasets(workerID, num_networks)
+    generator = ToGenerator(info, EVAL_SIM_TAG)
+    workerID = info["workerID"]
+    num_networks = sim_specs["user"]["num_networks"]
+
 
     model = Net(InitialData["parameters"][0]).to(device)
-
     model.train()
+    train_loader, test_loader = _get_datasets(workerID, num_networks)
 
     for batch_idx, (data, target) in enumerate(train_loader):
 
@@ -49,11 +50,9 @@ def mnist_training_sim(InitialData, _, sim_specs, info):
         loss = F.nll_loss(output, target)
 
         loss.backward(retain_graph=True)
-
-        if batch_idx % 10 == 0:
-            print(
-                f"Sim {workerID}: [{batch_idx * len(data)}/{len(train_loader.dataset)}]\tLoss: {loss.item():.2f}"
-            )
+        print(
+            f"Sim {workerID}: [{batch_idx * len(data)}/{len(train_loader.dataset)}]\tLoss: {loss.item():.3f}"
+        )
 
         grads = torch.autograd.grad(loss, model.parameters(), retain_graph=True)
 
@@ -62,13 +61,12 @@ def mnist_training_sim(InitialData, _, sim_specs, info):
 
         tag, _, calc_in = generator.send_recv(Output)
         if tag in [PERSIS_STOP, STOP_TAG]:
-            model.eval()
-            model.test_model(device, test_loader)
-            return None, {}, WORKER_DONE
+            break
 
         _update_parameters(model, device, calc_in["parameters"][0])
+
         model.zero_grad()
 
     model.eval()
     model.test_model(device, test_loader)
-    return None, {}, WORKER_DONE
+    return None, {}, FINISHED_PERSISTENT_SIM_TAG

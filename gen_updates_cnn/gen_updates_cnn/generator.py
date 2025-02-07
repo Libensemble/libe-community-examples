@@ -16,16 +16,6 @@ from .mnist.nn import Net
 from .utils import _connect_to_store, _get_device
 
 
-def _optimize(model, device, grads, optimizer):
-    """Assign summed gradients from simulators to parent model. Trains parent model."""
-    for param, new_grad in zip(model.parameters(), grads):
-        new_grad = new_grad.to(device)
-        param.grad = new_grad
-
-    model.train()
-    optimizer.step()
-
-
 def _proxify_parameters(store, model, N):
     """
     Convert parent model parameters to proxies for N target networks.
@@ -35,6 +25,15 @@ def _proxify_parameters(store, model, N):
         [store.proxy(i.cpu().detach().numpy(), evict=True) for i in model.parameters()]
         for _ in range(N)
     ]
+
+
+def _optimize(model, device, grads, optimizer):
+    """Assign summed gradients from simulators to parent model. Trains parent model."""
+    for param, new_grad in zip(model.parameters(), grads):
+        new_grad = new_grad.to(device)
+        param.grad = new_grad
+
+    optimizer.step()
 
 
 def _get_optimizer(model):
@@ -56,7 +55,8 @@ def _get_summed_grads(grads):
 def parent_model_trainer(H, _, gen_specs, libE_info):
     """
     Maintain a parent CNN that is trained using summed gradients from the
-    simulators. Optimized parameters are streamed back to the simulators.
+    simulators. Optimized parameters are streamed back to the simulators
+    while they are training.
     """
 
     store = _connect_to_store()
@@ -67,6 +67,7 @@ def parent_model_trainer(H, _, gen_specs, libE_info):
     N = gen_specs["user"]["num_networks"]
 
     model = Net().to(device)
+    model.train()
     optimizer = _get_optimizer(model)
 
     while True:

@@ -5,8 +5,24 @@
 
 Starts N parallel CNN training instances on separate, distributed
 worker processes. The workers send their gradients during training
-to a manager process, where optimization is performed on the combined
-data. Updated model weights are sent back to the workers.
+to a manager process, where the combined gradients are optimized
+into updated model weights. These are sent back to the workers.
+
+The dataset is evenly split among the N workers.
+
+The gradients are streamed across the network
+
+## Justification
+
+Optimization-in-the-training-loop is a common paradigm for training AI models.
+However, if the local dataset for a model must remain small due to memory constraints,
+then time-to-generalization for the model may be high as batches of data are read into
+and out of memory for training. Furthermore, data-parallel techniques included in many
+common AI python libraries have difficulties running on/across HPC systems.
+
+libEnsemble is developed for easy parallelization on and across multiple nodes and HPC
+systems. Worker processes take no additional configuration to run on separate nodes
+and communicate with a head node.
 
 ## Setup
 

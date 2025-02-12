@@ -43,29 +43,31 @@ def mnist_training_sim(InitialData, _, sim_specs, info):
     model.train()
     train_loader, test_loader = _get_datasets(workerID, num_networks)
 
-    for batch_idx, (data, target) in enumerate(train_loader):
+    for epoch in range(1, sim_specs["user"]["max_epochs"] + 1):
+        print(f"Sim {workerID}: Epoch {epoch}")
+        for batch_idx, (data, target) in enumerate(train_loader):
 
-        data, target = data.to(device), target.to(device)
-        output = model(data)
-        loss = F.nll_loss(output, target)
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            loss = F.nll_loss(output, target)
 
-        loss.backward(retain_graph=True)
-        print(
-            f"Sim {workerID}: [{batch_idx * len(data)}/{len(train_loader.dataset)}]\tLoss: {loss.item():.3f}"
-        )
+            loss.backward(retain_graph=True)
+            print(
+                f"Sim {workerID}: [{batch_idx * len(data)}/{len(train_loader.dataset)}]\tLoss: {loss.item():.3f}"
+            )
 
-        grads = torch.autograd.grad(loss, model.parameters(), retain_graph=True)
+            grads = torch.autograd.grad(loss, model.parameters(), retain_graph=True)
 
-        Output = np.zeros(1, dtype=sim_specs["out"])
-        Output["local_gradients"] = _proxify_gradients(store, grads)
+            Output = np.zeros(1, dtype=sim_specs["out"])
+            Output["local_gradients"] = _proxify_gradients(store, grads)
 
-        tag, _, calc_in = generator.send_recv(Output)
-        if tag in [PERSIS_STOP, STOP_TAG]:
-            break
+            tag, _, calc_in = generator.send_recv(Output)
+            if tag in [PERSIS_STOP, STOP_TAG]:
+                break
 
-        _update_parameters(model, device, calc_in["parameters"][0])
+            _update_parameters(model, device, calc_in["parameters"][0])
 
-        model.zero_grad()
+            model.zero_grad()
 
     model.eval()
     model.test_model(device, test_loader)

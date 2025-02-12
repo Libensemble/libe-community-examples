@@ -15,13 +15,15 @@ if __name__ == "__main__":
     user = {"num_networks": ensemble.nworkers}
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)
+    sim_specs.user["max_epochs"] = 1
+    
     gen_specs = GenSpecs(gen_f=parent_model_trainer, user=user)
     alloc_specs = AllocSpecs(alloc_f=only_persistent_gens)
 
     ensemble.sim_specs = sim_specs
     ensemble.gen_specs = gen_specs
     ensemble.alloc_specs = alloc_specs
-    ensemble.exit_criteria = ExitCriteria(wallclock_max=10)
+    ensemble.exit_criteria = ExitCriteria(wallclock_max=15)
 
     ensemble.run()
     ensemble.save_output(__file__)

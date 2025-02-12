@@ -10,19 +10,23 @@ into updated model weights. These are sent back to the workers.
 
 The dataset is evenly split among the N workers.
 
-The gradients are streamed across the network
+Gradients are streamed across the network, including across nodes.
 
 ## Justification
 
-Optimization-in-the-training-loop is a common paradigm for training AI models.
-However, if the local dataset for a model must remain small due to memory constraints,
-then time-to-generalization for the model may be high as batches of data are read into
-and out of memory for training. Furthermore, data-parallel techniques included in many
-common AI python libraries have difficulties running on/across HPC systems.
+If the local dataset for training a single model must remain small,
+then time-to-generalization during training may be high as batches must be loaded
+and unloaded. Data-parallel or cross-node techniques in many AI libraries are difficult
+to run on multi-node systems, or assume user familiarity with parallel programming.
 
-libEnsemble is developed for easy parallelization on and across multiple nodes and HPC
-systems. Worker processes take no additional configuration to run on separate nodes
-and communicate with a head node.
+libEnsemble allows easy parallelization across multiple nodes and HPC
+systems. "Ensembles" of experiments with libEnsemble take no configuration
+to run on separate nodes and intercommunicate. 
+
+In this example, N models are optimized in parallel by a parent "generator"
+model based on the summed gradients from the N "simulator" models. For this
+simpler example users must only specify the number of workers `-n N` and start
+a background redis server for data-streaming.
 
 ## Setup
 
@@ -39,9 +43,15 @@ proxystore = ">=0.8.0, <0.9"
 redis = ">=5.2.1, <6"
 ```
 
-Then start a redis server instance to hold streaming data:
+### Local setup
+
+Start a redis server instance to hold streaming data:
 
 `redis-server`
+
+### Multi-node
+
+TODO
 
 ## Simulator
 

@@ -1,16 +1,17 @@
 
-# Distributed CNN Optimization with libEnsemble
+# Data-Parallel Distributed Supervised Learning with libEnsemble
 
 `python run_libe_cnn.py -n N`
 
-Starts N parallel CNN training instances on separate, distributed
-worker processes. The workers send their gradients during training
-to a manager process, where the combined gradients are optimized
-into updated model weights. These are sent back to the workers.
+The training dataset is evenly split among the N workers. libEnsemble
+starts N parallel training instances on separate, distributed
+worker processes. These workers compute the gradient of the loss function for their portion
+of the dataset and send their gradients to a generator process. The generator process
+combines the gradients from all workers, updates the model parameters, and sends 
+the updated model back to the workers.
 
-The dataset is evenly split among the N workers.
-
-Gradients are streamed across the network, including across nodes.
+Given the number of gradients/parameters that are being updated, `proxystore`
+is used.
 
 ## Justification
 
@@ -23,9 +24,9 @@ libEnsemble allows easy parallelization across multiple nodes and HPC
 systems. "Ensembles" of experiments with libEnsemble take no configuration
 to run on separate nodes and intercommunicate. 
 
-In this example, N models are optimized in parallel by a parent "generator"
+In this example, one model is optimized in parallel by a parent "generator"
 model based on the summed gradients from the N "simulator" models. For this
-simpler example users must only specify the number of workers `-n N` and start
+simpler example, users must only specify the number of workers `-n N` and start
 a background redis server for data-streaming.
 
 ## Setup
@@ -56,13 +57,13 @@ TODO
 ## Simulator
 
 Runs model training code without optimization. Sends gradients across
-network to generator inside training loop. Parameters from generator
+the network to the generator running a training loop. Parameters from the generator
 are updated inside each training loop.
 
 ## Generator
 
 Initializes a parent model. Receives gradients from each simulator,
-sums each, performs optimization using parent model, and sends
+sums each, performs optimization to update the model, and sends
 updated model parameters to the simulators.
 
 ## mnist directory

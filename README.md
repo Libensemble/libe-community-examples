@@ -101,8 +101,7 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 9. #### Ax multi-task
    *Optimization Generator Function*
 
-   A generator function for Bayesian optimization with a Gaussian process. Currently requires
-   ``ax-platform<=0.4.0``
+   A generator function for multi-fidelity Bayesian optimization with a Gaussian process.
 
 10. #### GP Dragonfly
     *Optimization Generator Function*

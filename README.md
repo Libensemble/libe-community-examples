@@ -12,7 +12,7 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 
 
 1. #### VTMOP
-    *Optimization Generator Function*
+   *Optimization Generator Function*
 
     VTMOP is a Fortran 2008 package containing a robust, portable solver and
     a flexible framework for solving MOPs. Designed for efficiency and
@@ -30,7 +30,7 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
     Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/gen_funcs/vtmop_libe).
 
 2. #### LibE-DDMD
-    *Complete Workflow*
+   *Complete Workflow*
 
     A complete Molecular-Dynamics / Machine-Learning adaptive
     simulation loop based on [DeepDriveMD](https://deepdrivemd.github.io/).
@@ -104,8 +104,22 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
    A generator function for multi-fidelity Bayesian optimization with a Gaussian process.
 
 10. #### GP Dragonfly
-  *Optimization Generator Function*
+    *Optimization Generator Function*
 
-  Another generator function for Bayesian optimization with a Gaussian process, using `dragonfly`. Previous
-  working versions of the included test required the following fork: `https://github.com/jlnav/dragonfly`,
-  since upstream no longer appears under active development.
+      Another generator function for Bayesian optimization with a Gaussian process, using `dragonfly`. Previous
+      working versions of the included test required the following fork: `https://github.com/jlnav/dragonfly`,
+      since upstream no longer appears under active development.
+
+11. #### Gen Updates CNN - Data-parallel Distributed Supervised Learning
+    *Complete Workflow*
+
+      libEnsemble starts N parallel training instances on separate, distributed
+      worker processes, each with an even split of the training dataset. These workers
+      compute the gradient of the loss function for their portion
+      of the dataset and send their gradients to a generator process. The generator process
+      combines the gradients from all workers, updates the model parameters, and sends 
+      the updated model back to the workers.
+
+      Given the number of gradients/parameters that are being updated,
+      [proxystore](https://docs.proxystore.dev/main/)
+      is used to stream data between the processes.

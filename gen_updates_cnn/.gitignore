@@ -1,0 +1,7 @@
+*.egg-info
+*__pycache__
+docs/_build
+
+# pixi environments
+.pixi
+*.egg-info

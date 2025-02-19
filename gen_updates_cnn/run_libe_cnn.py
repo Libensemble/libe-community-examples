@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     ensemble.libE_specs.gen_on_manager = True
 
-    user = {"num_networks": ensemble.nworkers}
+    user = {"num_networks": ensemble.nworkers, "proxystore_hostname": "localhost"}
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)
     sim_specs.user["max_epochs"] = 2

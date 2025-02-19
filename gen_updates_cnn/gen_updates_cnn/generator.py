@@ -59,7 +59,7 @@ def parent_model_trainer(H, _, gen_specs, libE_info):
     while they are training.
     """
 
-    store = _connect_to_store()
+    store = _connect_to_store(gen_specs["user"]["proxystore_hostname"])
     device = _get_device()
 
     simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)

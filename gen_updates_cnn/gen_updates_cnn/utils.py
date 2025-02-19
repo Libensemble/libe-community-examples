@@ -4,11 +4,11 @@ from proxystore.store import Store, get_store
 from proxystore.proxy import Proxy, is_resolved
 from torchvision import datasets, transforms
 
-def _connect_to_store():
+def _connect_to_store(hostname):
     """Connect to proxystore redis server"""
     store = Store(
         "my-store",
-        RedisConnector(hostname="localhost", port=6379),
+        RedisConnector(hostname=hostname, port=6379),
         register=True,
     )
 

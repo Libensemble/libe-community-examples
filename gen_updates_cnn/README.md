@@ -26,7 +26,7 @@ to run on separate nodes and intercommunicate.
 
 In this example, one model is optimized in parallel by a parent "generator"
 model based on the summed gradients from the N "simulator" models. For this
-simpler example, users must only specify the number of workers `-n N` and start
+simple example, users must only specify the number of workers `-n N` and start
 a background redis server for data-streaming.
 
 ## Setup
@@ -56,14 +56,14 @@ TODO
 
 ## Simulator
 
-Runs model training code without optimization. Sends gradients across
-the network to the generator running a training loop. Parameters from the generator
-are updated inside each training loop.
+Runs model training code without optimization, while still computing
+and backpropagating loss. During each training step, sends gradients across
+the network to the generator, and receives updated model parameters.
 
 ## Generator
 
 Initializes a parent model. Receives gradients from each simulator,
-sums each, performs optimization to update the model, and sends
+sums each, performs optimization to update the parent model, and sends
 updated model parameters to the simulators.
 
 ## mnist directory

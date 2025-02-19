@@ -30,8 +30,8 @@ def _get_datasets(worker_id, num_networks):
     """Get datasets for training and testing, splitting into even chunks for each worker"""
     # TODO: refactor this
 
-    train_kwargs = {"batch_size": 640, "shuffle": True}
-    test_kwargs = {"batch_size": 2500, "shuffle": True}
+    train_kwargs = {"batch_size": 1000, "shuffle": True}
+    test_kwargs = {"batch_size": 5000, "shuffle": True}
 
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]

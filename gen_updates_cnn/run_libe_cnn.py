@@ -15,7 +15,7 @@ if __name__ == "__main__":
     user = {"num_networks": ensemble.nworkers}
 
     sim_specs = SimSpecs(sim_f=mnist_training_sim, user=user)
-    sim_specs.user["max_epochs"] = 1
+    sim_specs.user["max_epochs"] = 2
     
     gen_specs = GenSpecs(gen_f=parent_model_trainer, user=user)
     alloc_specs = AllocSpecs(alloc_f=only_persistent_gens)

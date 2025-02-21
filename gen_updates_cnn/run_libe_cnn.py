@@ -23,7 +23,8 @@ if __name__ == "__main__":
     ensemble.sim_specs = sim_specs
     ensemble.gen_specs = gen_specs
     ensemble.alloc_specs = alloc_specs
-    ensemble.exit_criteria = ExitCriteria(wallclock_max=15)
+    ensemble.exit_criteria = ExitCriteria(sim_max=100)
 
     ensemble.run()
-    ensemble.save_output(__file__)
+    if ensemble.is_manager:
+        ensemble.save_output(__file__)

@@ -218,8 +218,6 @@ def main():
     if args.save_model:
         torch.save(model.state_dict(), "mnist_cnn.pt")
 
-    return grads
-
 
 if __name__ == "__main__":
     main()

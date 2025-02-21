@@ -9,6 +9,7 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.nn.parallel import DistributedDataParallel as DDP
 import sys
+import os
 
 import numpy as np
 
@@ -177,8 +178,6 @@ def main():
 
     if use_cuda:
         device = torch.device(f"cuda:{rank % torch.cuda.device_count()}")
-    elif use_mps:
-        device = torch.device("mps")
     else:
         device = torch.device("cpu")
 
@@ -198,15 +197,21 @@ def main():
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
+    if use_cuda:
+        dist.init_process_group("nccl")
+    else:
+        dist.init_process_group()
+
     model = Net().to(device)
-    model = DDP(model, device_ids=[rank % torch.cuda.device_count()])
+    if use_cuda:
+        device_ids = [rank % torch.cuda.device_count()]
+    else:
+        device_ids = [0]
+    model = DDP(model, device_ids=device_ids)
 
     rank = int(os.environ["RANK"])
-    world_size = int(os.environ["WORLD_SIZE"])
-    use_gpu = torch.cuda.is_available()
 
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
-    dist.init_process_group("nccl")
 
     for epoch in range(1, args.epochs + 1):
         grads = model.train_model(args, device, train_loader, epoch, 1, optimizer)

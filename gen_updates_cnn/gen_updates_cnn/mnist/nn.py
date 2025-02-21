@@ -24,8 +24,6 @@ class Net(nn.Module):
             for param, value in zip(self.parameters(), input_parameters):
                 param.data = torch.from_numpy(np.array(value))
 
-        self.total_train_loss = 0
-
     def forward(self, x):
         x = self.conv1(x)
         x = F.relu(x)
@@ -62,15 +60,7 @@ class Net(nn.Module):
                 if args.dry_run:
                     break
             loss.backward(retain_graph=True)
-            
-            # send:recv
-            
-            # if input_parameters is not None:
-            #     for param, value in zip(self.parameters(), input_parameters):
-            #         param.data = torch.from_numpy(np.array(value))
-            
-            break  # we want new parameters from the gen after each batch
-            # update new parameters based on optimized parameters from gen
+
         grads = torch.autograd.grad(loss, self.parameters(), retain_graph=True)
         return grads
 
@@ -102,7 +92,7 @@ class Net(nn.Module):
         , flush=True)
 
 
-def main(parameters=None, worker_id=None, num_networks=1):
+def main():
     # Training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
     parser.add_argument(
@@ -175,7 +165,7 @@ def main(parameters=None, worker_id=None, num_networks=1):
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     use_mps = not args.no_mps and torch.backends.mps.is_available()
 
-    seed = worker_id if worker_id is not None else args.seed
+    seed = args.seed
 
     torch.manual_seed(seed)
 
@@ -199,31 +189,13 @@ def main(parameters=None, worker_id=None, num_networks=1):
     dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
     dataset2 = datasets.MNIST("../data", train=False, transform=transform)
 
-    local_train_dataset_size = len(dataset1) // num_networks
-    local_test_dataset_size = len(dataset2) // num_networks
-
-    if worker_id is not None:
-        start_index_mult = worker_id - 1
-        
-        start_index_train = start_index_mult * local_train_dataset_size
-        end_index_train = start_index_train + local_train_dataset_size
-
-        start_index_test = start_index_mult * local_test_dataset_size
-        end_index_test = start_index_test + local_test_dataset_size
-
-        dataset1 = torch.utils.data.Subset(dataset1, range(start_index_train, end_index_train))
-        dataset2 = torch.utils.data.Subset(dataset2, range(start_index_test, end_index_test))
-
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
-    if parameters is None:
-        model = Net().to(device)
-    else:
-        model = Net(parameters).to(device)
+    model = Net().to(device)
 
     for epoch in range(1, args.epochs + 1):
-        grads = model.train_model(args, device, train_loader, epoch, worker_id)
+        grads = model.train_model(args, device, train_loader, epoch, 1)
         model.test_model(device, test_loader)
 
     if args.save_model:

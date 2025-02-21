@@ -32,7 +32,7 @@ def mnist_training_sim(InitialData, _, sim_specs, info):
     """
 
     store = _connect_to_store(sim_specs["user"]["proxystore_hostname"])
-    device = _get_device()
+    device = _get_device(info)
 
     generator = ToGenerator(info, EVAL_SIM_TAG)
     workerID = info["workerID"]

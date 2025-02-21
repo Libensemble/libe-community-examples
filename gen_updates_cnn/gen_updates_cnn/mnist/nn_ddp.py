@@ -99,21 +99,21 @@ def main():
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=16,
+        default=1000,
         metavar="N",
         help="input batch size for training (default: 64)",
     )
     parser.add_argument(
         "--test-batch-size",
         type=int,
-        default=250,
+        default=5000,
         metavar="N",
         help="input batch size for testing (default: 1000)",
     )
     parser.add_argument(
         "--epochs",
         type=int,
-        default=1,
+        default=2,
         metavar="N",
         help="number of epochs to train (default: 14)",
     )

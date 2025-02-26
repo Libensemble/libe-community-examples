@@ -53,7 +53,7 @@ class Net(nn.Module):
                         epoch,
                         batch_idx * len(data),
                         len(train_loader.dataset),
-                    100.0 * batch_idx / len(train_loader),
+                        100.0 * batch_idx / len(train_loader),
                         loss.item(),
                     )
                 )
@@ -88,8 +88,9 @@ class Net(nn.Module):
                 correct,
                 len(test_loader.dataset),
                 100.0 * correct / len(test_loader.dataset),
-            )
-        , flush=True)
+            ),
+            flush=True,
+        )
 
 
 def main():

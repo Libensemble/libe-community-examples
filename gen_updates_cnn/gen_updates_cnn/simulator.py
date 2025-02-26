@@ -1,12 +1,16 @@
 import numpy as np
-from libensemble.message_numbers import PERSIS_STOP, STOP_TAG, EVAL_SIM_TAG, FINISHED_PERSISTENT_SIM_TAG
+from libensemble.message_numbers import (
+    PERSIS_STOP,
+    STOP_TAG,
+    EVAL_SIM_TAG,
+    FINISHED_PERSISTENT_SIM_TAG,
+)
 from libensemble.specs import output_data, input_fields, persistent_input_fields
 from libensemble.tools.persistent_support import PersistentSupport as ToGenerator
 
 import torch
 import torch.nn.functional as F
 
-from .mnist.nn import Net
 from .utils import _connect_to_store, _get_device, _get_datasets
 
 
@@ -17,34 +21,76 @@ def _proxify_gradients(store, grads):
 
 def _update_parameters(model, device, params):
     """Update sim model parameters"""
-    for (param, value) in zip(model.parameters(), params):
+    for param, value in zip(model.parameters(), params):
         param.data = torch.from_numpy(np.array(value)).to(device)
+
+
+def test_model(model, device, test_loader):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.enable_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += F.nll_loss(
+                output, target, reduction="sum"
+            ).item()  # sum up batch loss
+            pred = output.argmax(
+                dim=1, keepdim=True
+            )  # get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+    test_loss /= len(test_loader.dataset)
+
+    print(
+        "\nSIMULATOR Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
+            test_loss,
+            correct,
+            len(test_loader.dataset),
+            100.0 * correct / len(test_loader.dataset),
+        ),
+        flush=True,
+    )
 
 
 @input_fields(["parameters"])
 @persistent_input_fields(["parameters"])
 @output_data([("local_gradients", object, (8,))])
-def mnist_training_sim(InitialData, _, sim_specs, info):
+def model_trainer(InitialData, _, sim_specs, info):
     """
     Maintain a child CNN that is trained using summed gradients from an optimized
     parent model on the generator. Gradients are streamed to the generator, and
     updated parameters are streamed back to the simulators.
     """
 
-    store = _connect_to_store(sim_specs["user"]["proxystore_hostname"])
+    user = sim_specs["user"]
+
+    store = _connect_to_store(user["proxystore_hostname"])
     device = _get_device(info)
 
     generator = ToGenerator(info, EVAL_SIM_TAG)
     workerID = info["workerID"]
-    num_networks = sim_specs["user"]["num_networks"]
 
+    N = user["num_networks"]
+    Net = user["model_definition"]
 
-    model = Net(InitialData["parameters"][0]).to(device)
-    model.train()
-    train_loader, test_loader = _get_datasets(workerID, num_networks)
+    model = Net().to(device)
 
-    for epoch in range(1, sim_specs["user"]["max_epochs"] + 1):
+    _update_parameters(model, device, InitialData["parameters"][0])
+
+    train_loader, test_loader = _get_datasets(
+        user["train_data"],
+        user["test_data"],
+        workerID,
+        N,
+        user["train_batch_size"],
+        user["test_batch_size"],
+    )
+
+    for epoch in range(1, user["max_epochs"] + 1):
         print(f"Sim {workerID}: Epoch {epoch}")
+        model.train()
         for batch_idx, (data, target) in enumerate(train_loader):
 
             data, target = data.to(device), target.to(device)
@@ -68,7 +114,7 @@ def mnist_training_sim(InitialData, _, sim_specs, info):
             _update_parameters(model, device, calc_in["parameters"][0])
 
             model.zero_grad()
+        test_model(model, device, test_loader)
 
-    model.eval()
-    model.test_model(device, test_loader)
+    test_model(model, device, test_loader)
     return None, {}, FINISHED_PERSISTENT_SIM_TAG

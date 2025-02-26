@@ -12,7 +12,6 @@ from libensemble.tools.persistent_support import PersistentSupport
 import torch
 import torch.optim as optim
 
-from .mnist.nn import Net
 from .utils import _connect_to_store, _get_device
 
 
@@ -52,7 +51,7 @@ def _get_summed_grads(grads):
 
 @persistent_input_fields(["local_gradients"])
 @output_data([("parameters", object, (8,))])
-def parent_model_trainer(H, _, gen_specs, libE_info):
+def parent_model_optimizer(H, _, gen_specs, libE_info):
     """
     Maintain a parent CNN that is trained using summed gradients from the
     simulators. Optimized parameters are streamed back to the simulators
@@ -63,12 +62,15 @@ def parent_model_trainer(H, _, gen_specs, libE_info):
     device = _get_device(libE_info, is_generator=True)
 
     simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
-    initial_complete = False
+
     N = gen_specs["user"]["num_networks"]
+    Net = gen_specs["user"]["model_definition"]
 
     model = Net().to(device)
     model.train()
     optimizer = _get_optimizer(model)
+
+    initial_complete = False
 
     while True:
         output = np.zeros(N, dtype=gen_specs["out"])

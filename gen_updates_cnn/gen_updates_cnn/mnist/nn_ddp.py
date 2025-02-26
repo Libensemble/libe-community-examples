@@ -43,6 +43,7 @@ class Net(nn.Module):
         output = F.log_softmax(x, dim=1)
         return output
 
+
 def train_model(model, args, device, train_loader, epoch, worker_id, optimizer):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
@@ -56,7 +57,7 @@ def train_model(model, args, device, train_loader, epoch, worker_id, optimizer):
                     epoch,
                     batch_idx * len(data),
                     len(train_loader.dataset),
-                100.0 * batch_idx / len(train_loader),
+                    100.0 * batch_idx / len(train_loader),
                     loss.item(),
                 )
             )
@@ -64,6 +65,7 @@ def train_model(model, args, device, train_loader, epoch, worker_id, optimizer):
                 break
         loss.backward()
         optimizer.step()
+
 
 def test_model(model, device, test_loader):
     model.eval()
@@ -89,8 +91,9 @@ def test_model(model, device, test_loader):
             correct,
             len(test_loader.dataset),
             100.0 * correct / len(test_loader.dataset),
-        )
-    , flush=True)
+        ),
+        flush=True,
+    )
 
 
 def main():
@@ -162,9 +165,9 @@ def main():
         default=False,
         help="For Saving the current Model",
     )
-    
+
     rank = int(os.environ["RANK"])
-    
+
     args = parser.parse_args([])  # avoid conflict with libensemble args
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     use_mps = not args.no_mps and torch.backends.mps.is_available()

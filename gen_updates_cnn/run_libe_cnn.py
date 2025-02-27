@@ -43,29 +43,33 @@ class Net(nn.Module):
 transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
 )
+
 dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
 dataset2 = datasets.MNIST("../data", train=False, transform=transform)
 
 MAX_OPTIMIZER_STEPS = 100
+STREAMING_DATABASE_HOST = "localhost"
+
+settings = {
+    "model_definition": Net,
+    "train_data": dataset1,
+    "test_data": dataset2,
+    "train_batch_size": 1000,
+    "test_batch_size": 5000,
+    "max_epochs": 2,
+    "proxystore_hostname": STREAMING_DATABASE_HOST,
+}
 
 if __name__ == "__main__":
 
     ensemble = Ensemble(parse_args=True)
+
+    user["num_networks"] = ensemble.nworkers
+
     ensemble.libE_specs.gen_on_manager = True
 
-    user = {
-        "model_definition": Net,
-        "num_networks": ensemble.nworkers,
-        "train_data": dataset1,
-        "test_data": dataset2,
-        "train_batch_size": 1000,
-        "test_batch_size": 5000,
-        "max_epochs": 2,
-        "proxystore_hostname": "localhost",
-    }
-
-    sim_specs = SimSpecs(sim_f=model_trainer, user=user)
-    gen_specs = GenSpecs(gen_f=parent_model_optimizer, user=user)
+    sim_specs = SimSpecs(sim_f=model_trainer, user=settings)
+    gen_specs = GenSpecs(gen_f=parent_model_optimizer, user=settings)
     alloc_specs = AllocSpecs(alloc_f=only_persistent_gens)
 
     ensemble.sim_specs = sim_specs

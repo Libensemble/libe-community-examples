@@ -73,7 +73,7 @@ STREAMING_DATABASE_HOST = "my-login-node"
 3. Grab an interactive session on 2 nodes:
 
 ```shell
-qsub -A [project] -l select=2:mpiprocs=4 -l walltime=20:00 -q[queue] -I
+qsub -A [project] -l select=2 -l walltime=20:00 -q[queue] -I
 ```
 
 ## Simulator

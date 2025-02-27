@@ -49,6 +49,7 @@ dataset2 = datasets.MNIST("../data", train=False, transform=transform)
 
 MAX_OPTIMIZER_STEPS = 100
 STREAMING_DATABASE_HOST = "localhost"
+NUM_CUDA_NODES = 2
 
 settings = {
     "model_definition": Net,
@@ -58,6 +59,7 @@ settings = {
     "test_batch_size": 5000,
     "max_epochs": 2,
     "proxystore_hostname": STREAMING_DATABASE_HOST,
+    "num_nodes": NUM_CUDA_NODES,
 }
 
 if __name__ == "__main__":

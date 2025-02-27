@@ -59,7 +59,7 @@ def parent_model_optimizer(H, _, gen_specs, libE_info):
     """
 
     store = _connect_to_store(gen_specs["user"]["proxystore_hostname"])
-    device = _get_device(libE_info, is_generator=True)
+    device = _get_device(libE_info, gen_specs, is_generator=True)
 
     simulators = PersistentSupport(libE_info, EVAL_GEN_TAG)
 

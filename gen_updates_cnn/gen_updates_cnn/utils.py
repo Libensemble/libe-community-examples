@@ -16,14 +16,15 @@ def _connect_to_store(hostname):
     return get_store("my-store")
 
 
-def _get_device(info, is_generator=False):
+def _get_device(info, specs, is_generator=False):
     """Get device to train on"""
+    num_nodes = specs["user"]["num_nodes"]
     if torch.cuda.is_available():
         worker_id = int(info["workerID"])
         if is_generator:  # use GPU 1 for generator
             device_id = 1
         else:  # use GPU 1 for simulator, GPU N for simulator N
-            device_id = worker_id
+            device_id = (worker_id % num_nodes) + 1
         device = torch.device("cuda:" + str(device_id))
     elif torch.backends.mps.is_available():
         device = torch.device("mps")

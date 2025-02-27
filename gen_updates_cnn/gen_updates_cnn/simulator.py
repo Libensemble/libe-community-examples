@@ -67,7 +67,7 @@ def model_trainer(InitialData, _, sim_specs, info):
     user = sim_specs["user"]
 
     store = _connect_to_store(user["proxystore_hostname"])
-    device = _get_device(info)
+    device = _get_device(info, sim_specs)
 
     generator = ToGenerator(info, EVAL_SIM_TAG)
     workerID = info["workerID"]
@@ -99,7 +99,7 @@ def model_trainer(InitialData, _, sim_specs, info):
 
             loss.backward(retain_graph=True)
             print(
-                f"Sim {workerID}: [{batch_idx * len(data)}/{len(train_loader.dataset)}]\tLoss: {loss.item():.3f}"
+                f"Sim {workerID}: [{batch_idx * len(data)}/{len(train_loader.dataset)}]\tLoss: {loss.item():.3f}", flush=True
             )
 
             grads = torch.autograd.grad(loss, model.parameters(), retain_graph=True)
@@ -109,12 +109,12 @@ def model_trainer(InitialData, _, sim_specs, info):
 
             tag, _, calc_in = generator.send_recv(Output)
             if tag in [PERSIS_STOP, STOP_TAG]:
-                break
+                test_model(model, device, test_loader)
+                return None, {}, FINISHED_PERSISTENT_SIM_TAG
 
             _update_parameters(model, device, calc_in["parameters"][0])
 
             model.zero_grad()
         test_model(model, device, test_loader)
 
-    test_model(model, device, test_loader)
     return None, {}, FINISHED_PERSISTENT_SIM_TAG

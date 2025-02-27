@@ -82,6 +82,9 @@ qsub -A [project] -l select=2 -l walltime=20:00 -q[queue] -I
 mpiexec -n 4 --ppn 2 python run_libe_cnn.py
 ```
 
+5. (Debugging) If the allocated GPUs aren't available, adjust the `get_device()` logic in
+`gen_updates_cnn/utils.py`:
+
 ## Simulator
 
 Runs model training code without optimization, while still computing

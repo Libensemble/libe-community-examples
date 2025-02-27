@@ -11,7 +11,7 @@ combines the gradients from all workers, updates the model parameters, and sends
 the updated model back to the workers.
 
 Given the number of gradients/parameters that are being updated, `proxystore`
-is used.
+is used to stream the data between the processes.
 
 ## Justification
 
@@ -44,6 +44,8 @@ proxystore = ">=0.8.0, <0.9"
 redis = ">=5.2.1, <6"
 ```
 
+If running multinode install `mpi4py`
+
 ### Local setup
 
 Start a redis server instance to hold streaming data:
@@ -52,21 +54,52 @@ Start a redis server instance to hold streaming data:
 
 ### Multi-node
 
-TODO
+Assuming the PBS scheduler for this example.
 
-## Simulator
+1. Start your redis server in the background, such that it'll be 
+reachable from the compute nodes:
+
+```shell
+redis-server --protected-mode no &
+```
+
+2. In `run_libe_cnn.py`, modify the `STREAMING_DATABASE_HOST` variable
+to match the hostname of the login node running the redis server:
+
+```python
+STREAMING_DATABASE_HOST = "my-login-node"
+```
+
+3. Grab an interactive session on 2 nodes:
+
+```shell
+qsub -A [project] -l select=2 -l walltime=20:00 -q[queue] -I
+```
+
+4. Run the libEnsemble workflow with MPI, splitting the processes across the nodes:
+
+```shell
+mpiexec -n 4 --ppn 2 python run_libe_cnn.py
+```
+
+5. (Debugging) If the allocated GPUs aren't available, adjust the `get_device()` logic in
+`gen_updates_cnn/utils.py`:
+
+## Additional information
+
+### Simulator
 
 Runs model training code without optimization, while still computing
 and backpropagating loss. During each training step, sends gradients across
 the network to the generator, and receives updated model parameters.
 
-## Generator
+### Generator
 
 Initializes a parent model. Receives gradients from each simulator,
 sums each, performs optimization to update the parent model, and sends
 updated model parameters to the simulators.
 
-## mnist directory
+### mnist directory
 
 The CNN model training code can be run separately.
 
@@ -76,3 +109,8 @@ Within the `mnist` directory:
 
 Runs one epoch by default. See the `argparse.parser.add_argument`
 calls within `main()` for additional configuration options.
+
+`python nn_ddp.py`
+
+Runs a similar example model, using `torch.DistributedDataParallel` for comparison
+purposes.

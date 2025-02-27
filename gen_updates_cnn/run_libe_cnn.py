@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 
 import torch
@@ -66,7 +67,7 @@ if __name__ == "__main__":
 
     ensemble = Ensemble(parse_args=True)
 
-    user["num_networks"] = ensemble.nworkers
+    settings["num_networks"] = ensemble.nworkers
 
     ensemble.libE_specs.gen_on_manager = True
 
@@ -82,3 +83,4 @@ if __name__ == "__main__":
     ensemble.run()
     if ensemble.is_manager:
         ensemble.save_output(__file__)
+    sys.exit(0)

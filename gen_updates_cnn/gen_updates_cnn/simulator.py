@@ -25,7 +25,7 @@ def _update_parameters(model, device, params):
         param.data = torch.from_numpy(np.array(value)).to(device)
 
 
-def test_model(model, device, test_loader):
+def test_model(model, device, test_loader, workerID):
     model.eval()
     test_loss = 0
     correct = 0
@@ -44,7 +44,8 @@ def test_model(model, device, test_loader):
     test_loss /= len(test_loader.dataset)
 
     print(
-        "\nSIMULATOR Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
+        "Sim {}: Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
+            workerID,
             test_loss,
             correct,
             len(test_loader.dataset),
@@ -89,7 +90,7 @@ def model_trainer(InitialData, _, sim_specs, info):
     )
 
     for epoch in range(1, user["max_epochs"] + 1):
-        print(f"Sim {workerID}: Epoch {epoch}")
+        print(f"Sim {workerID}: Starting epoch {epoch}")
         model.train()
         for batch_idx, (data, target) in enumerate(train_loader):
 
@@ -109,12 +110,15 @@ def model_trainer(InitialData, _, sim_specs, info):
 
             tag, _, calc_in = generator.send_recv(Output)
             if tag in [PERSIS_STOP, STOP_TAG]:
-                test_model(model, device, test_loader)
+                print(f"Sim {workerID}: Instructed to stop. Testing model.", flush=True)
+                test_model(model, device, test_loader, workerID)
                 return None, {}, FINISHED_PERSISTENT_SIM_TAG
 
             _update_parameters(model, device, calc_in["parameters"][0])
 
             model.zero_grad()
-        test_model(model, device, test_loader)
+
+        print(f"Sim {workerID}: Ending epoch {epoch}. Testing model.", flush=True)
+        test_model(model, device, test_loader, workerID)
 
     return None, {}, FINISHED_PERSISTENT_SIM_TAG

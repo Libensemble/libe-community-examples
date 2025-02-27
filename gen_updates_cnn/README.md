@@ -76,6 +76,12 @@ STREAMING_DATABASE_HOST = "my-login-node"
 qsub -A [project] -l select=2 -l walltime=20:00 -q[queue] -I
 ```
 
+4. Run the libEnsemble workflow with MPI, splitting the processes across the nodes:
+
+```shell
+mpiexec -n 4 --ppn 2 python run_libe_cnn.py
+```
+
 ## Simulator
 
 Runs model training code without optimization, while still computing

@@ -85,19 +85,21 @@ mpiexec -n 4 --ppn 2 python run_libe_cnn.py
 5. (Debugging) If the allocated GPUs aren't available, adjust the `get_device()` logic in
 `gen_updates_cnn/utils.py`:
 
-## Simulator
+## Additional information
+
+### Simulator
 
 Runs model training code without optimization, while still computing
 and backpropagating loss. During each training step, sends gradients across
 the network to the generator, and receives updated model parameters.
 
-## Generator
+### Generator
 
 Initializes a parent model. Receives gradients from each simulator,
 sums each, performs optimization to update the parent model, and sends
 updated model parameters to the simulators.
 
-## mnist directory
+### mnist directory
 
 The CNN model training code can be run separately.
 
@@ -107,3 +109,8 @@ Within the `mnist` directory:
 
 Runs one epoch by default. See the `argparse.parser.add_argument`
 calls within `main()` for additional configuration options.
+
+`python nn_ddp.py`
+
+Runs a similar example model, using `torch.DistributedDataParallel` for comparison
+purposes.

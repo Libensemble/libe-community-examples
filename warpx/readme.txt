@@ -15,7 +15,7 @@ res2          64  4096      54s       4.557730935993e-06
 res3         128  8192     214s       5.683672880520962e-06
 res4         256 16384    1092s       5.667607648747023e-06
 
-I ran the last run on 2 GPUs instead of 1, and it took 780s instead of 1092s,
+I (Maxence Thevenet‬) ran the last run on 2 GPUs instead of 1, and it took 780s instead of 1092s,
 meaning we can run it on either 1 GPU or 2. That way, we can explore it either
 having all resolutions on the same number of GPUs, or on a different number of
 GPUs. In the end, we would probably be interested in the former, which can also

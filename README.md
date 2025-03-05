@@ -128,5 +128,5 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
     *Complete Workflow*
 
     [WarpX](https://ecp-warpx.github.io/) is a Gordon Bell Prize awarded Particle-In-Cell application. libEnsemble
-    helped coordinate large WarpX convergence studies on Summit. The included example includes can apply APOSMM to
+    helped coordinate large WarpX convergence studies on Summit. The included example can apply APOSMM to
     optimize the four `ramp_down_1`, `ramp_down_2`, `zlens_1`, and `adjust_factor` application parameters.

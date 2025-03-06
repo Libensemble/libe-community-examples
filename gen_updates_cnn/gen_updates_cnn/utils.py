@@ -26,9 +26,11 @@ def _get_device(info, specs, is_generator=False):
         else:  # use GPU N for simulator N
             device_id = (worker_id % num_nodes) + 1
         device = torch.device("cuda:" + str(device_id))
-    elif torch.backends.mps.is_available():
+    elif torch.backends.mps.is_available() and specs["user"]["parent_model_device"] == "GPU":
         device = torch.device("mps")
     else:
+        device = torch.device("cpu")
+    if is_generator and specs["user"]["parent_model_device"] == "CPU":  # overwrite device if specified
         device = torch.device("cpu")
     return device
 

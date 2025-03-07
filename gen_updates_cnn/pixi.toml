@@ -24,3 +24,6 @@ dev = ["dev"]
 [feature.dev.dependencies]
 ipdb = ">=0.13.13,<0.14"
 black = ">=24.10.0,<25"
+
+[feature.dev.pypi-dependencies]
+wat = ">=0.5.1, <0.6"

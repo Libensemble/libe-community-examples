@@ -48,6 +48,7 @@ transform = transforms.Compose(
 dataset1 = datasets.MNIST("../data", train=True, download=True, transform=transform)
 dataset2 = datasets.MNIST("../data", train=False, transform=transform)
 
+PARENT_MODEL_DEVICE = "GPU"  # "CPU"
 MAX_OPTIMIZER_STEPS = 100
 STREAMING_DATABASE_HOST = "localhost"
 NUM_CUDA_NODES = 2
@@ -61,6 +62,7 @@ settings = {
     "max_epochs": 2,
     "proxystore_hostname": STREAMING_DATABASE_HOST,
     "num_nodes": NUM_CUDA_NODES,
+    "parent_model_device": PARENT_MODEL_DEVICE,
 }
 
 if __name__ == "__main__":

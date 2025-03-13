@@ -68,7 +68,7 @@ def model_trainer(InitialData, _, sim_specs, info):
     user = sim_specs["user"]
 
     store = _connect_to_store(user["proxystore_hostname"])
-    device = _get_device(info, sim_specs)
+    device = _get_device(info, sim_specs, is_generator=False)
 
     generator = ToGenerator(info, EVAL_SIM_TAG)
     workerID = info["workerID"]

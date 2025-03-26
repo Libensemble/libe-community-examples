@@ -81,29 +81,29 @@ sim_specs = {
     "out": [
         # f is the single float output that LibEnsemble minimizes.
         ("f", float),
-        # # All parameters below are not used for calculation,
-        # # just output for convenience.
-        # # Final relative energy spread.
-        # ("energy_std", float, (1,)),
-        # # Final average energy, in MeV.
-        # ("energy_avg", float, (1,)),
-        # # Final beam charge.
-        # ("charge", float, (1,)),
-        # # Final beam emittance.
-        # ("emittance", float, (1,)),
-        # # input parameter: length of first downramp.
-        # ("ramp_down_1", float, (1,)),
-        # # input parameter: Length of second downramp.
-        # ("ramp_down_2", float, (1,)),
-        # # input parameter: position of the focusing lens.
-        # ("zlens_1", float, (1,)),
-        # # Relative strength of the lens (1. is from
-        # # back-of-the-envelope calculation)
-        # ("adjust_factor", float, (1,)),
+        # All parameters below are not used for calculation,
+        # just output for convenience.
+        # Final relative energy spread.
+        ("energy_std", float, (1,)),
+        # Final average energy, in MeV.
+        ("energy_avg", float, (1,)),
+        # Final beam charge.
+        ("charge", float, (1,)),
+        # Final beam emittance.
+        ("emittance", float, (1,)),
+        # input parameter: length of first downramp.
+        ("ramp_down_1", float, (1,)),
+        # input parameter: Length of second downramp.
+        ("ramp_down_2", float, (1,)),
+        # input parameter: position of the focusing lens.
+        ("zlens_1", float, (1,)),
+        # Relative strength of the lens (1. is from
+        # back-of-the-envelope calculation)
+        ("adjust_factor", float, (1,)),
     ],
     "user": {
         # name of input file
-        "input_filename": "inputs_test_2d_laser_acceleration_boosted",
+        "input_filename": "inputs",
         # Run timeouts after 3 mins
         "sim_kill_minutes": 3,
         # machine-specific parameters

@@ -84,7 +84,7 @@ def read_sim_output(workdir):
     workdir : Path to directory where the simulation ran.
     """
     # Get beam properties at the beginning of the run
-    file_list = glob.glob('diags/plotfiles/plt?????')
+    file_list = glob.glob('diags/plotfiles/plt??????')
     if (len(file_list) <2):
         print(workdir,' did not have final plotfile')
         return np.array([np.nan, np.nan, np.nan, np.nan, np.nan])
@@ -111,4 +111,5 @@ def read_sim_output(workdir):
 
         return warpx_out
     else:
+        print(workdir,' postprocessing did not produce a a charge_f value')
         return np.array([np.nan, np.nan, np.nan, np.nan, np.nan])

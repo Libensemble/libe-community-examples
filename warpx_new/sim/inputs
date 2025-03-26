@@ -6,8 +6,8 @@ amr.max_level = 0
 #################################
 ######### BOX PARAMETERS ########
 #################################
-# warpx.zmax_plasma_to_compute_max_step = 0.33
-warpx.zmax_plasma_to_compute_max_step = -1.
+warpx.zmax_plasma_to_compute_max_step = 0.33
+# warpx.zmax_plasma_to_compute_max_step = -1.
 # max_step = 3150
 
 amr.n_cell = 32 2048 # 64 3072

@@ -7,6 +7,9 @@ more information.
 
 :doc:`Main libEnsemble Documentation<main:index>`
 
+Generators
+==========
+
 .. _vtmop-link:
 
 vtmop
@@ -68,3 +71,9 @@ GP Dragonfly
 
 .. _DEAP: https://deap.readthedocs.io/en/master/overview.html
 .. _`community repository`: https://github.com/Libensemble/libe-community-examples
+
+Simulators
+==========
+
+.. automodule:: warpx_simf
+  :members: run_warpx

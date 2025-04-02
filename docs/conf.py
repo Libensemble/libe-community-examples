@@ -37,6 +37,7 @@ sys.path.append(os.path.abspath('../heffte_ytopt/'))
 sys.path.append(os.path.abspath('../icesheet/gen_funcs'))
 sys.path.append(os.path.abspath('../parmoo-emittance'))
 sys.path.append(os.path.abspath('../gp_dragonfly'))
+sys.path.append(os.path.abspath('../warpx'))
 
 # -- General configuration ------------------------------------------------
 

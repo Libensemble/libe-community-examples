@@ -16,7 +16,7 @@ nworkers=1 as one worker is for the persistent gen_f.
 
 # Either 'random' or 'aposmm'
 generator_type = "aposmm"
-# Either 'local' or 'summit'
+# Either 'local' or 'swing'
 machine = "local"
 
 import sys
@@ -28,13 +28,17 @@ from warpx_simf import run_warpx  # Sim function from current directory
 from libensemble.libE import libE
 
 if generator_type == "random":
-    from libensemble.alloc_funcs.give_sim_work_first import give_sim_work_first as alloc_f
+    from libensemble.alloc_funcs.give_sim_work_first import (
+        give_sim_work_first as alloc_f,
+    )
     from libensemble.gen_funcs.sampling import uniform_random_sample as gen_f
 elif generator_type == "aposmm":
     import libensemble.gen_funcs
 
     libensemble.gen_funcs.rc.aposmm_optimizers = "nlopt"
-    from libensemble.alloc_funcs.persistent_aposmm_alloc import persistent_aposmm_alloc as alloc_f
+    from libensemble.alloc_funcs.persistent_aposmm_alloc import (
+        persistent_aposmm_alloc as alloc_f,
+    )
     from libensemble.gen_funcs.persistent_aposmm import aposmm as gen_f
 else:
     print("you shouldn' hit that")
@@ -49,6 +53,8 @@ from libensemble.tools import add_unique_random_streams, parse_args, save_libE_o
 # Import machine-specific run parameters
 if machine == "local":
     machine_specs = all_machine_specs.local_specs
+elif machine == "swing":
+    machine_specs = all_machine_specs.swing_specs
 else:
     print("you shouldn' hit that")
     sys.exit()
@@ -205,10 +211,12 @@ exit_criteria = {"sim_max": sim_max}  # Exit after running sim_max simulations
 # Create a different random number stream for each worker and the manager
 persis_info = add_unique_random_streams({}, nworkers + 1)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Run LibEnsemble, and store results in history array H
-    H, persis_info, flag = libE(sim_specs, gen_specs, exit_criteria, persis_info, alloc_specs, libE_specs)
+    H, persis_info, flag = libE(
+        sim_specs, gen_specs, exit_criteria, persis_info, alloc_specs, libE_specs
+    )
 
     # Save results to numpy file
     if is_manager:

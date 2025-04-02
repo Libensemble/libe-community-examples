@@ -56,13 +56,19 @@ def write_sim_input(input_file, x_values):
     output_text = _set_value(output_text, "ions.zmax = ", str(end_stage_1))
     # Set length of final downramp of stage 1
     output_text = _set_value(
-        output_text, "electrons.predefined_profile_params = ", "0.0 .02 .297 " + str(ramp_down_1) + " 40.e-6 1.7e23"
+        output_text,
+        "electrons.predefined_profile_params = ",
+        "0.0 .02 .297 " + str(ramp_down_1) + " 40.e-6 1.7e23",
     )
     output_text = _set_value(
-        output_text, "ions.predefined_profile_params = ", "0.0 .02 .297 " + str(ramp_down_1) + " 40.e-6 1.7e23"
+        output_text,
+        "ions.predefined_profile_params = ",
+        "0.0 .02 .297 " + str(ramp_down_1) + " 40.e-6 1.7e23",
     )
     # Set position of lens
-    output_text = _set_value(output_text, "my_constants.zlen = ", str(end_stage_1 + zlens_1))
+    output_text = _set_value(
+        output_text, "my_constants.zlen = ", str(end_stage_1 + zlens_1)
+    )
     # Set beginning of stage 2
     output_text = _set_value(output_text, "electrons2.zmin = ", str(beg_stage_2))
     output_text = _set_value(output_text, "ions2.zmin = ", str(beg_stage_2))
@@ -81,9 +87,13 @@ def write_sim_input(input_file, x_values):
         str(beg_stage_2) + " .02 .297 " + str(ramp_down_2) + " 40.e-6 1.7e23",
     )
     # Set adjustment factor on lens strength
-    output_text = _set_value(output_text, "my_constants.adjust_factor = ", str(adjust_factor))
+    output_text = _set_value(
+        output_text, "my_constants.adjust_factor = ", str(adjust_factor)
+    )
     # Set when to stop the run
-    output_text = _set_value(output_text, "warpx.zmax_plasma_to_compute_max_step = ", str(zmax_stop_run))
+    output_text = _set_value(
+        output_text, "warpx.zmax_plasma_to_compute_max_step = ", str(zmax_stop_run)
+    )
 
     # Write new input file
     fout = open(input_file, "w")

@@ -356,6 +356,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/nlopt-2.10.0-py310hdd27c07_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/nomkl-1.0-h5ca1d4c_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-2.2.4-py310h4d83441_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openblas-0.3.29-openmp_hea878ba_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openjpeg-2.5.3-h8a3d83b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openpmd-api-0.16.1-nompi_py310h5113736_102.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openssl-3.4.1-h81ee809_0.conda
@@ -2030,7 +2031,7 @@ packages:
 - pypi: .
   name: libe-community-examples
   version: 0.1.0
-  sha256: ac11e336d724af7a20969aa643bc6f0e1b033dd38547651edafa3036b27609cf
+  sha256: 0afb84d356f5b404e5a4fd90d2316482186b2c92d770aebae7c7f375fbc17d81
   requires_python: '>=3.9'
   editable: true
 - conda: https://conda.anaconda.org/conda-forge/linux-64/libedit-3.1.20250104-pl5321h7949ede_0.conda
@@ -3172,6 +3173,16 @@ packages:
   - pkg:pypi/numpy?source=hash-mapping
   size: 5851623
   timestamp: 1742255346844
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/openblas-0.3.29-openmp_hea878ba_0.conda
+  sha256: 366590bc5a415949e6500e53f5c7519be83e1c257e64ac05438e7e693cf0139b
+  md5: cef07535f767f550b75f1a9a9ec61cb8
+  depends:
+  - libopenblas 0.3.29 openmp_hf332438_0
+  license: BSD-3-Clause
+  license_family: BSD
+  purls: []
+  size: 3073843
+  timestamp: 1739825524125
 - conda: https://conda.anaconda.org/conda-forge/linux-64/openjpeg-2.5.3-h5fbd93e_0.conda
   sha256: 5bee706ea5ba453ed7fd9da7da8380dd88b865c8d30b5aaec14d2b6dd32dbc39
   md5: 9e5816bc95d285c115a3ebc2f8563564

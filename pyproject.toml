@@ -34,9 +34,9 @@ libensemble = ">=1.4.3,<2"
 pip = ">=24.3.1,<25"
 sphinx = ">=7.4.7,<8"
 ax-platform = "==0.4.0"
-numpy = ">=2.2.4,<3"
 yt = ">=4.4.0,<5"
 warpx = ">=25.2,<26"
+numpy = ">=2.2.4,<3"
 
 [tool.pixi.tasks.build-docs]
 cmd = "cd docs && make html"
@@ -47,3 +47,4 @@ cmd = "rm -rf ensemble.log *.pickle *.npy libE_stats.txt"
 [tool.pixi.target.osx-arm64.dependencies]
 libgfortran = ">=5.0.0,<6"
 libgfortran5 = ">=13.2.0,<14"
+openblas = ">=0.3.29,<0.4"

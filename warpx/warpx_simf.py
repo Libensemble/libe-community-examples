@@ -43,11 +43,13 @@ def run_warpx(H, persis_info, sim_specs, libE_info):
 
     # Launch the executor to actually run the WarpX simulation
 
+    use_gpus = machine_specs["name"] == "polaris"
+
     task = exctr.submit(
         app_name="warpx",
         num_procs=machine_specs["cores"],
-        auto_assign_gpus=True,
-        match_procs_to_gpus=True,
+        auto_assign_gpus=use_gpus,
+        match_procs_to_gpus=use_gpus,
         app_args=app_args,
         stdout="out.txt",
         stderr="err.txt",

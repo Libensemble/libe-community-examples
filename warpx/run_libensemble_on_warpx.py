@@ -53,8 +53,8 @@ from libensemble.tools import add_unique_random_streams, parse_args, save_libE_o
 # Import machine-specific run parameters
 if machine == "local":
     machine_specs = all_machine_specs.local_specs
-elif machine == "swing":
-    machine_specs = all_machine_specs.swing_specs
+elif machine == "polaris":
+    machine_specs = all_machine_specs.polaris_specs
 else:
     print("you shouldn' hit that")
     sys.exit()

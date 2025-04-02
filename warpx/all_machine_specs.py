@@ -16,11 +16,11 @@ local_specs = {
     "sim_max": 10,  # Maximum number of simulations
 }
 
-swing_specs = {
-    "name": "swing",  # Machine name
-    "cores": 1,  # Number of cores per simulation
-    "sim_app": shutil.which("warpx.3d"),
+polaris_specs = {
+    "name": "polaris",  # Machine name
+    "cores": 4,  # Number of cores per simulation
+    "sim_app": shutil.which("warpx.2d"),
     "extra_args": "",  # extra arguments passed to mpirun/mpiexec at execution
-    "OMP_NUM_THREADS": "10",
+    "OMP_NUM_THREADS": "8",
     "sim_max": 100,  # Maximum number of simulations
 }

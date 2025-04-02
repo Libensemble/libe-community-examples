@@ -49,8 +49,6 @@ from libensemble.tools import add_unique_random_streams, parse_args, save_libE_o
 # Import machine-specific run parameters
 if machine == "local":
     machine_specs = all_machine_specs.local_specs
-elif machine == "summit":
-    machine_specs = all_machine_specs.summit_specs
 else:
     print("you shouldn' hit that")
     sys.exit()
@@ -207,9 +205,11 @@ exit_criteria = {"sim_max": sim_max}  # Exit after running sim_max simulations
 # Create a different random number stream for each worker and the manager
 persis_info = add_unique_random_streams({}, nworkers + 1)
 
-# Run LibEnsemble, and store results in history array H
-H, persis_info, flag = libE(sim_specs, gen_specs, exit_criteria, persis_info, alloc_specs, libE_specs)
+if __name__ == '__main__':
 
-# Save results to numpy file
-if is_manager:
-    save_libE_output(H, persis_info, __file__, nworkers)
+    # Run LibEnsemble, and store results in history array H
+    H, persis_info, flag = libE(sim_specs, gen_specs, exit_criteria, persis_info, alloc_specs, libE_specs)
+
+    # Save results to numpy file
+    if is_manager:
+        save_libE_output(H, persis_info, __file__, nworkers)

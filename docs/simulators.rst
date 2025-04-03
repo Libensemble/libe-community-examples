@@ -4,6 +4,9 @@ Simulators
 WarpX
 -----
 
+.. role:: underline
+   :class: underline
+
 .. automodule:: warpx_simf
   :members: run_warpx
 

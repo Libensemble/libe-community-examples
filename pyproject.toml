@@ -37,6 +37,7 @@ ax-platform = "==0.4.0"
 yt = ">=4.4.0,<5"
 warpx = ">=25.2,<26"
 numpy = ">=2.2.4,<3"
+sphinx-design = ">=0.6.1,<0.7"
 
 [tool.pixi.tasks.build-docs]
 cmd = "cd docs && make html"

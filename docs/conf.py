@@ -37,6 +37,7 @@ sys.path.append(os.path.abspath('../heffte_ytopt/'))
 sys.path.append(os.path.abspath('../icesheet/gen_funcs'))
 sys.path.append(os.path.abspath('../parmoo-emittance'))
 sys.path.append(os.path.abspath('../gp_dragonfly'))
+sys.path.append(os.path.abspath('../warpx'))
 
 # -- General configuration ------------------------------------------------
 
@@ -47,7 +48,8 @@ needs_sphinx = '2.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
+extensions = ['sphinx_design',
+              'sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.intersphinx',
               'sphinx.ext.imgconverter',

@@ -37,11 +37,12 @@ jobs:
           pip install scipy
           pip install --upgrade git+https://github.com/Libensemble/libensemble.git@develop
 
-      - name: Install Ubuntu compilers, MPI, nlopt
+      - name: Install Ubuntu compilers, MPI, nlopt, warpx
         run: |
           conda install gcc_linux-64
           conda install mpich mpi4py
           conda install nlopt
+          conda install warpx yt
 
       - name: Build ytopt and dependencies
         run: |
@@ -90,3 +91,4 @@ jobs:
           cd ../heffte_ytopt/ytopt_heffte/; python test_ytopt_heffte.py --comms local --nworkers 4
           cd ../heffte; python test_heffte.py --comms local --nworkers 4
           cd ../../ax-multitask; python test_persistent_gp_multitask_ax.py --comms local --nworkers 4
+          cd ../warpx; python run_libensemble_on_warpx.py --comms local --nworkers 4

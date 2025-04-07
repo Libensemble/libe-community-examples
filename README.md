@@ -14,34 +14,34 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 1. #### VTMOP
    *Optimization Generator Function*
 
-    VTMOP is a Fortran 2008 package containing a robust, portable solver and
-    a flexible framework for solving MOPs. Designed for efficiency and
-    scalability to an arbitrary number of objectives, VTMOP attempts to generate
-    uniformly spaced points on a (possibly nonconvex) Pareto front with minimal
-    cost function evaluations.
+   VTMOP is a Fortran 2008 package containing a robust, portable solver and
+   a flexible framework for solving MOPs. Designed for efficiency and
+   scalability to an arbitrary number of objectives, VTMOP attempts to generate
+   uniformly spaced points on a (possibly nonconvex) Pareto front with minimal
+   cost function evaluations.
 
-    ```
-    Chang, T.H., Larson, J., Watson, L.T., and Lux, T.C.H. Managing
-    computationally expensive blackbox multiobjective optimization problems
-    with libEnsemble. In Proc. 2020 Spring Simulation Conference (SpringSim '20),
-    Article No. 31, pp. 1–12. DOI: 10.22360/springsim.2020.hpc.001
-    ```
+   ```
+   Chang, T.H., Larson, J., Watson, L.T., and Lux, T.C.H. Managing
+   computationally expensive blackbox multiobjective optimization problems
+   with libEnsemble. In Proc. 2020 Spring Simulation Conference (SpringSim '20),
+   Article No. 31, pp. 1–12. DOI: 10.22360/springsim.2020.hpc.001
+   ```
 
-    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/gen_funcs/vtmop_libe).
+   Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/gen_funcs/vtmop_libe).
 
 2. #### LibE-DDMD
    *Complete Workflow*
 
-    A complete Molecular-Dynamics / Machine-Learning adaptive
-    simulation loop based on [DeepDriveMD](https://deepdrivemd.github.io/).
-    The simulation function runs molecular-dynamics evaluations using DeepDriveMD's
-    ``run_openmm.py``, while the persistent generator function runs the remaining
-    machine-learning training and model selection operations on the output.
-    The generator parameterizes subsequent MD runs by selecting outlier points.
-    See ``ddmd/readme.md`` for more information. Constructed by the libEnsemble team
-    as a proof-of-concept with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).
+   A complete Molecular-Dynamics / Machine-Learning adaptive
+   simulation loop based on [DeepDriveMD](https://deepdrivemd.github.io/).
+   The simulation function runs molecular-dynamics evaluations using DeepDriveMD's
+   ``run_openmm.py``, while the persistent generator function runs the remaining
+   machine-learning training and model selection operations on the output.
+   The generator parameterizes subsequent MD runs by selecting outlier points.
+   See ``ddmd/readme.md`` for more information. Constructed by the libEnsemble team
+   as a proof-of-concept with help from [the DeepDriveMD team](https://deepdrivemd.github.io/team.html).
 
-    Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/tests/scaling_tests/ddmd).
+   Originally included in libEnsemble v0.8.0. See [here](https://github.com/Libensemble/libensemble/tree/v0.8.0/libensemble/tests/scaling_tests/ddmd).
 
 3. #### DEAP-NSGA-II
    *Optimization Generator Function*
@@ -106,20 +106,27 @@ and has [API documentation available online](https://libensemble.readthedocs.io/
 10. #### GP Dragonfly
     *Optimization Generator Function*
 
-      Another generator function for Bayesian optimization with a Gaussian process, using `dragonfly`. Previous
-      working versions of the included test required the following fork: `https://github.com/jlnav/dragonfly`,
-      since upstream no longer appears under active development.
+    Another generator function for Bayesian optimization with a Gaussian process, using `dragonfly`. Previous
+    working versions of the included test required the following fork: `https://github.com/jlnav/dragonfly`,
+    since upstream no longer appears under active development.
 
 11. #### Gen Updates CNN - Data-parallel Distributed Supervised Learning
     *Complete Workflow*
 
-      libEnsemble starts N parallel training instances on separate, distributed
-      worker processes, each with an even split of the training dataset. These workers
-      compute the gradient of the loss function for their portion
-      of the dataset and send their gradients to a generator process. The generator process
-      combines the gradients from all workers, updates the model parameters, and sends 
-      the updated model back to the workers.
+    libEnsemble starts N parallel training instances on separate, distributed
+    worker processes, each with an even split of the training dataset. These workers
+    compute the gradient of the loss function for their portion
+    of the dataset and send their gradients to a generator process. The generator process
+    combines the gradients from all workers, updates the model parameters, and sends
+    the updated model back to the workers.
 
-      Given the number of gradients/parameters that are being updated,
-      [proxystore](https://docs.proxystore.dev/main/)
-      is used to stream data between the processes.
+    Given the number of gradients/parameters that are being updated,
+    [proxystore](https://docs.proxystore.dev/main/)
+    is used to stream data between the processes.
+
+12. #### WarpX Optimization
+    *Complete Workflow*
+
+    [WarpX](https://ecp-warpx.github.io/) is a Gordon Bell Prize awarded Particle-In-Cell application. libEnsemble
+    helped coordinate large WarpX convergence studies on Summit. The included example can apply APOSMM to
+    optimize the four `ramp_down_1`, `ramp_down_2`, `zlens_1`, and `adjust_factor` application parameters.

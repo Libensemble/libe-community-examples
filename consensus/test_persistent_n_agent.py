@@ -35,7 +35,7 @@ import numpy as np
 import numpy.linalg as la
 import scipy.sparse as spp
 
-from libensemble.alloc_funcs.start_persistent_consensus import start_consensus_persistent_gens as alloc_f
+from start_persistent_consensus import start_consensus_persistent_gens as alloc_f
 from gens.persistent_n_agent import n_agent as gen_f
 from libensemble.libE import libE
 from sims.alt_rosenbrock import alt_rosenbrock_eval

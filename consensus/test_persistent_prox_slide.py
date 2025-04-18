@@ -29,7 +29,7 @@ import numpy as np
 import numpy.linalg as la
 import scipy.sparse as spp
 
-from libensemble.alloc_funcs.start_persistent_consensus import start_consensus_persistent_gens as alloc_f
+from start_persistent_consensus import start_consensus_persistent_gens as alloc_f
 from gens.persistent_prox_slide import opt_slide as gen_f
 from libensemble.libE import libE
 from sims.geomedian import geomedian_eval

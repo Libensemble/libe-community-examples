@@ -34,7 +34,7 @@ from ytopt_asktell import persistent_ytopt  # Gen function, communicates with yt
 
 # Import libEnsemble items for this test
 from libensemble.libE import libE
-from libensemble.sim_funcs.ytopt_obj import init_obj  # Sim function, calls Plopper
+from ytopt_obj import init_obj  # Sim function, calls Plopper
 from libensemble.tools import add_unique_random_streams, parse_args
 
 # Parse comms, default options from commandline

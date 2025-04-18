@@ -36,8 +36,8 @@ sphinx = ">=7.4.7,<8"
 ax-platform = "==0.4.0"
 yt = ">=4.4.0,<5"
 warpx = ">=25.2,<26"
-numpy = ">=2.2.4,<3"
 sphinx-design = ">=0.6.1,<0.7"
+scipy = ">=1.15.2,<2"
 
 [tool.pixi.tasks.build-docs]
 cmd = "cd docs && make html"
@@ -46,6 +46,10 @@ cmd = "cd docs && make html"
 cmd = "rm -rf ensemble.log *.pickle *.npy libE_stats.txt"
 
 [tool.pixi.target.osx-arm64.dependencies]
+clang_osx-arm64 = ">=20.1.2,<21"
 libgfortran = ">=5.0.0,<6"
 libgfortran5 = ">=13.2.0,<14"
 openblas = ">=0.3.29,<0.4"
+gfortran_osx-arm64 = ">=13.3.0,<14"
+gfortran_impl_osx-arm64 = ">=13.3.0,<14"
+

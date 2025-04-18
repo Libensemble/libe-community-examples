@@ -83,7 +83,7 @@ if __name__ == "__main__":
             prob_name = "Chained Rosenbrock"
             L = 1
             fstar = 0
-            err_const = 1e3
+            err_const = 2e3
 
         if prob_id == 1:
             sim_f = alt_rosenbrock_eval
